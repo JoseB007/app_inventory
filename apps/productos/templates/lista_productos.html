@@ -1,0 +1,31 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block scripts %}
+    <script src="{% static 'js/list.js' %}"></script>
+{% endblock %}
+{% block columnas %}
+    <th>#</th>
+    <th>Nombre</th>
+    <th>Descripción</th>
+    <th>Categoría</th>
+    <th>Precio</th>
+    <th>Stock</th>
+    <th>Opciones</th>
+{% endblock %}
+
+{% block filas %}
+        <!--
+        {% for producto in lista_productos %}
+        <tr>
+            {% with forloop.counter as index %}
+                <th>{{ index }}</th>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.descripcion }}</td>
+                <td>{{ producto.precio }}</td>
+                <td>{{ producto.cantidad_en_stock }}</td>
+                <td>{{ producto.categoria }}</td>
+            {% endwith %}
+        </tr>
+        {% endfor %}
+        -->
+{% endblock %}

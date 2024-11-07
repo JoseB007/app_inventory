@@ -1,0 +1,22 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block scripts %}
+<script src="{% static 'js/usuarios/list.js' %}"></script>
+{% endblock %}
+
+{% block columnas %}
+    <th>#</th>
+    <th>Nombre de usuario</th>
+    <th>Nombres</th>
+    <th>Apellidos</th>
+    <th>Correo electrónico</th>
+    <th>Grupos</th>
+    <th>Tipo</th>
+    <th>Última conexión</th>
+    <th>Fecha de creación</th>
+    <th>Opciones</th>
+{% endblock %}
+
+{% block filas %}
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'body.html' %}
+{% load static %}
+
+{% block content %}
+<table class="table">
+    <thead>
+        <th>ID</th>
+        <th>Producto</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Fecha</th>
+        <th>Tipo</th>
+        <th>Empleado</th>
+    </thead>
+    <tbody>
+        {% for item in datos %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.precio }}</td>
+                <td>{{ item.stock }}</td>
+                <td>{{ item.fecha_historial }}</td>
+                {% if item.tipo == '~' %}
+                    <td>Actualizar</td>
+                {% elif item.tipo == '+' %}
+                    <td>Agregar</td>
+                {% else %}
+                    <td>Eliminar</td>
+                {% endif %}
+                <td>{{ item.empleado }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+

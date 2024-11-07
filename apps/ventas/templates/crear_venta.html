@@ -1,0 +1,248 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block scripts %}
+<!-- jQuery UI -->
+<link rel="stylesheet" href="{% static 'lib/jquery-ui-1.14.0.custom/jquery-ui.min.css' %}" />
+<script src="{% static 'lib/jquery-ui-1.14.0.custom/jquery-ui.min.js' %}"></script>
+<!-- TouchSpin -->
+<link rel="stylesheet" href="{% static 'lib/bootstrap-touchspin-master/dist/jquery.bootstrap-touchspin.min.css' %}" />
+<script src="{% static 'lib/bootstrap-touchspin-master/dist/jquery.bootstrap-touchspin.min.js' %}"></script>
+<!-- Scripts -->
+<script src="{% static 'js/orden_venta/functions.js' %}"></script>
+{% endblock %}
+{% block content %}
+
+<form action="." method="post" id="id_formulario_venta">
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                {% if guardar_datos == 'guardar' %}
+                <i class="fas fa-plus"></i>
+                {% else %}
+                <i class="fas fa-search"></i>
+                {% endif %} {{ title }}
+            </h3>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fa-solid fa-boxes-packing"></i>
+                                Detalle de productos
+                            </h3>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="">Buscar producto:</label>
+                                <div class="input-group">
+                                    <input id="buscar_producto" type="text" class="form-control"
+                                        placeholder="Ingrese un producto..." autocomplete="off" />
+                                    <span class="input-group-append">
+                                        <button type="button" class="btn btn-danger btn-flat btnClear">
+                                            <font style="vertical-align: inherit">
+                                                <font style="
+                                                        vertical-align: inherit;
+                                                    "><i class="fas fa-times"></i>
+                                                </font>
+                                            </font>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <hr />
+                            <table id="tabla_ventas" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Precio unitario</th>
+                                        <th>Cantidad</th>
+                                        <th>Subtotal</th>
+                                        <th>Eliminar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                            <hr />
+                            <button type="button" class="btn btn-primary btn-deleteProducts btn-flat">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                                productos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fa-solid fa-cart-plus"></i> Detalle de
+                                factura
+                            </h3>
+                        </div>
+
+                        <div class="card-body">
+                            <input type="hidden" name="accion" value="{{guardar_datos}}" />
+                            <div class="form-group">
+                                <label for="">Cliente:</label>
+                                <div class="input-group mb-3">
+                                    {{ form.cliente }}
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-primary btn-addCliente"><i
+                                                class="fa-solid fa-user-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Estado:</label>
+                                {{ form.estado }}
+                            </div>
+                            <div class="form-group">
+                                <label for="">Subtotal:</label>
+                                {{ form.subtotal }}
+                            </div>
+                            <div class="form-group">
+                                <label for="">Impuesto IVA:</label>
+                                <input type="text" name="porcentaje_iva" id="porcentaje_iva" class="form-control"
+                                    value="0.0" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">IVA:</label>
+                                {{ form.iva }}
+                            </div>
+                            <div class="form-group">
+                                <label for="">Total:</label>
+                                {{ form.total }}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-flat btn-primary btn-save">
+                                <i class="fas fa-save"></i> Facturar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block show %}
+    <!-- Modal -->
+    <div class="modal fade" id="modalFact" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fa-solid fa-circle-info"></i> Pagar factura
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="container">
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-12 border-bottom"  style="text-align: center; margin-bottom: 1rem;">
+                                    <label for="">Total a pagar</label>
+                                    <h1 id="id_totalVenta" style="font-weight: 700">
+                                        $
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-7 border-end">
+                                <div class="form-group">
+                                    <label for="">Efectivo *</label>
+                                    <input type="number" class="form-control" name="efectivo" id="id_efectivo"
+                                        placeholder="Digite el monto en efectivo" />
+                                </div>
+                            </div>
+                            <div class="col-sm-5" style="text-align: right;">
+                                <div class="border-bottom">
+                                    <label for="">Efectivo cliente</label>
+                                    <h1 id="id_monto" style="font-weight: 700">
+                                        $
+                                    </h1>
+                                </div>
+                                <div>
+                                    <label for="">Cambio cliente</label>
+                                    <h1 id="id_cambio" style="font-weight: 700">
+                                        $
+                                    </h1>
+                                </div>
+                            </div>    
+                        </div>                    
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary btn-flat" type="submit">
+                            Vender
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    <script>
+        var url = '{% static "lib/dataTables/language_spanish.txt" %}';
+        var url_redireccion = "{{url_redireccion}}";
+        $("#tabla_ventas").DataTable({
+            responsive: true,
+            language: {
+                url: url,
+            },
+        });
+    </script>
+</form>
+
+<form action="." method="post" id="id_formulario_cliente">
+    {% csrf_token %}
+    <input type="hidden" name="guardar_datos" value="{{ guardar_datos }}">
+    <input type="hidden" name="msj" value="{{ msj }}">
+    <!-- Modal -->
+    <div class="modal fade" id="modalAddCliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fa-solid fa-circle-info"></i> Agregar cliente
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="">Nombre:</label>
+                        {{formCliente.nombre}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Documento de Identidad:</label>
+                        {{formCliente.documento_identidad}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Teléfono:</label>
+                        {{formCliente.telefono}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Correo Electrónico:</label>
+                        {{formCliente.correo_electronico}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Dirección:</label>
+                        {{formCliente.direccion}}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-flat btn-primary">
+                        <i class="fas fa-save"></i> Guardar registro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

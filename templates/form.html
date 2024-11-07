@@ -1,0 +1,65 @@
+{% extends 'body.html' %}
+
+{% block content %}
+<form action="." method="post" id="formulario_productos">
+    {% csrf_token %}
+    <input type="hidden" name="guardar_datos" value="{{ guardar_datos }}">
+
+    <!--
+        {% if form.errors %}
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-ban"></i> Ha ocurrido un error al querer guardar el registro</h5>
+            {% for field, field_errors in form.errors.items %}
+                {% for error in field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    -->
+
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">
+                {% if guardar_datos == 'guardar' %}
+                <i class="fas fa-plus"></i>
+                {% else %}
+                <i class="fas fa-edit"></i>
+                {% endif %}
+                {{ title }}
+            </h3>
+        </div>
+
+        <div class="card-body">
+            {% for campo in form.visible_fields %}
+            <div class="form-group">
+                <label>{{ campo.label }}</label>
+                {{ campo }}
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary btn-flat">
+                <i class="fas fa-save"></i> Guardar registro
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    // Se ejecuta cuando cualquier formulario en la página es enviado    
+    $('#formulario_productos').on('submit', function (e) {
+        e.preventDefault(); // Previene el envío normal del formulario y la recarga de la página
+
+        // Serializa los datos del formulario en un array de objetos {name: 'nombre_del_campo', value: 'valor_del_campo'}
+        var parametros = $(this).serializeArray();
+        var url_redireccion = '{{ url_reedireccion }}'
+
+        // Realiza una solicitud AJAX
+        enviar_datos_ajax(window.location.pathname, parametros, url_redireccion);
+    });
+
+</script>
+{% endblock %}

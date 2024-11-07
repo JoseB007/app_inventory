@@ -1,0 +1,58 @@
+{% extends 'body.html' %}
+{% load static %}
+{% block listado %}
+<!-- dataTables -->
+<link rel="stylesheet" href="{% static 'lib/dataTables-2.1.8/css/dataTables.bootstrap5.min.css' %}" />
+<script src="{% static 'lib/dataTables-2.1.8/js/dataTables.min.js' %}"></script>
+<script src="{% static 'lib/dataTables-2.1.8/js/dataTables.bootstrap5.min.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'lib/dataTables/Responsive-3.0.3/css/responsive.bootstrap5.min.css' %}">
+<script src="{% static 'lib/dataTables/Responsive-3.0.3/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'lib/dataTables/Responsive-3.0.3/js/responsive.bootstrap5.min.js' %}"></script>
+{% block scripts %}
+
+{% endblock %}
+{% endblock %}
+
+{% block content %}
+<div class="card card-default">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fa-solid fa-list"></i>
+            {{ title }}
+        </h3>
+    </div>
+
+    <div class="card-body">
+        <table id="tabla_productos" class="table">
+            <thead>
+                {% block columnas %}
+
+                {% endblock %}
+            </thead>
+            <tbody>
+                {% block filas %}
+
+                {% endblock %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        {% block botones %}
+        <a href="{{ crear_registro }}" class="btn btn-primary btn-flat">
+            <i class="fas fa-plus"></i> Nuevo registro
+        </a>
+        {% endblock %}
+    </div>
+</div>
+
+{% block show %}
+
+{% endblock %}
+
+<script>
+    var url = '{% static "lib/dataTables/language_spanish.txt" %}'
+    var tabla_selector = '#tabla_productos'
+    tabla_de_registros(tabla_selector, url);
+</script>
+{% endblock %}

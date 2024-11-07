@@ -1,0 +1,19 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block scripts %}
+    <script src="{% static 'js/list_clientes.js' %}"></script>
+{% endblock %}
+
+{% block columnas %}
+    <th>No.</th>
+    <th>Nombre</th>
+    <th>Documento de Identidad</th>
+    <th>Teléfono</th>
+    <th>Correo Electrónico</th>
+    <th>Dirección</th>
+    <th>Opciones</th>
+{% endblock %}
+
+{% block filas %}
+
+{% endblock %}

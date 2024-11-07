@@ -1,0 +1,20 @@
+{% extends 'list.html' %}
+{% load static %}
+{% block scripts %}
+    <script src="{% static 'js/empleados/list.js' %}"></script>
+{% endblock %}
+
+{% block columnas %}
+    <th>No.</th>
+    <th>Empleado</th>
+    <th>Doc. Identidad</th>
+    <th>Teléfono</th>
+    <th>Dirección</th>
+    <th>Correo Electrónico</th>
+    <th>Fecha de Contratación</th>
+    <th>Opciones</th>
+{% endblock %}
+
+{% block filas %}
+
+{% endblock %}
