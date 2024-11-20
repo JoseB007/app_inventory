@@ -70,12 +70,20 @@ class CrearProveedor(ValidacionPermisosMixin, generic.CreateView):
         datos = {}
         try:
             accion = request.POST['guardar_datos']
+            msj = self.request.POST.get('msj')
             if accion == 'guardar':
                 form = self.get_form()
                 if form.is_valid():
-                    form.save()
-                    print(form.cleaned_data)
-                    messages.success(request, 'El registro se ha creado exitosamente.')
+                    proveedor = form.save()
+                    datos['proveedor'] = {
+                        'id': proveedor.id,
+                        'nombre': proveedor.nombre,
+                        'direccion': proveedor.direccion,
+                        'telefono': proveedor.telefono,
+                        'email': proveedor.correo_electronico,
+                    }
+                    if msj != 'no_msj':
+                        messages.success(request, 'El registro se ha creado exitosamente.')
                 else:
                     datos['error'] = form.errors
             else:

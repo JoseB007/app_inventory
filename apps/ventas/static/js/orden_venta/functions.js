@@ -137,7 +137,7 @@ $(function () {
                 error: function (xhr, status) {
                     alert(
                         "Disculpe, existió un problema.",
-                        textStatus + ": " + errorThrown
+                        status + ": " + xhr
                     );
                 },
             });
@@ -307,6 +307,7 @@ $(function () {
             if (!response.error) {
                 $("#modalAddCliente").modal("hide");
 
+                // Limpiar datos del formulario modal
                 var formCliente = $("#id_formulario_cliente input");
                 $.each(formCliente, function (index, campo) {
                     if ($(campo).is("input")) {

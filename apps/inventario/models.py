@@ -1,27 +1,33 @@
 from django.db import models
-from apps.productos.models import Producto
-from apps.empleados.models import Empleado
+from django.forms import model_to_dict
+from django.utils.timezone import localtime, now
+
+
 from apps.compras.models import OrdenDeCompra
 from apps.ventas.models import OrdenDeVenta
+from apps.empleados.models import Empleado
 
-# Create your models here.
+
 class MovimientoInventario(models.Model):
-    ENTRADA = 'Entrada'
-    SALIDA = 'Salida'
+    fecha = models.DateField(default=now, unique=True)  # Día del movimiento
+    total_ventas = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_compras = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     
-    TIPO_MOVIMIENTO = [
-        (ENTRADA, 'Entrada'),
-        (SALIDA, 'Salida'),
-    ]
-
-    tipo = models.CharField(max_length=10, choices=TIPO_MOVIMIENTO)
-    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True)
-    cantidad = models.PositiveIntegerField(default=0)
-    fecha = models.DateTimeField(auto_now_add=True)
-    empleado = models.ForeignKey(Empleado, on_delete=models.SET_NULL, null=True)
-    orden_de_compra = models.ForeignKey(OrdenDeCompra, on_delete=models.SET_NULL, null=True, blank=True)
-    orden_de_venta = models.ForeignKey(OrdenDeVenta, on_delete=models.SET_NULL, null=True, blank=True)
-
+    ordenes_venta = models.ManyToManyField(OrdenDeVenta, blank=True)
+    ordenes_compra = models.ManyToManyField(OrdenDeCompra, blank=True)
+    
+    def actualizar_totales(self):
+        """Recalcula los totales de ventas y compras."""
+        self.total_ventas = sum(orden.total for orden in self.ordenes_venta.all())
+        self.total_compras = sum(orden.total for orden in self.ordenes_compra.all())
+        self.save()
+    
     def __str__(self):
-        return f"Movimiento {self.id}. Tipo: {self.tipo} Producto: {self.producto.nombre}"
+        return f"Movimiento del {self.fecha}: Ventas ${self.total_ventas}, Compras ${self.total_compras}"
     
+    def json_mov_inventario(self):
+        inventario = model_to_dict(self, exclude=["ordenes_venta", "ordenes_compra"])
+        inventario['fecha'] = self.fecha.strftime('%d de %b de %Y')
+        return inventario
+
+

@@ -6,17 +6,24 @@ from django.views import generic
 from django.db import transaction
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest, HttpResponse, JsonResponse
-
+from django.utils.timezone import now, localdate
 
 from apps.productos.models import Producto
+from apps.ventas.utils import formatear_numero
 from apps.clientes.forms import FormularioCliente
 from apps.ventas.forms import FormularioOrdenDeVenta
 from apps.ventas.mixins import ValidacionPermisosMixin
 from apps.ventas.models import OrdenDeVenta, DetalleOrdenDeVenta
+from apps.inventario.models import MovimientoInventario
+from apps.empleados.models import Empleado
+from apps.usuarios.models import Usuario
+
+
+from xhtml2pdf import pisa
 
 
 # Create your views here.
@@ -77,7 +84,14 @@ class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
 
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
+        # Obtener los ID de los usuarios relacionados con la tabla EMPLEADOS
+        empleados = Empleado.objects.values_list('usuario', flat=True)
+        # Validar si el ID del usuario en sesión se encuentra relacionado con la tabla EMPLEADOS
+        if request.user.pk not in empleados:
+            messages.info(request, "La sesión actual no tiene relación con ningún empleado.")
+            return redirect(self.success_url)
         return super().dispatch(request, *args, **kwargs)
+        
 
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         data = {}
@@ -99,21 +113,11 @@ class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
                 try:
                     with transaction.atomic():
                         venta = json.loads(request.POST['sale'])
-                        
-                        # Crear la orden de venta
-                        orden_venta = OrdenDeVenta(
-                            cliente_id=int(venta['cliente']),
-                            estado=venta['estado'],
-                            subtotal=float(venta['subtotal']),
-                            iva=float(venta['iva']),
-                            total=float(venta['total']),
-                        )
-                        orden_venta.save()
 
                         # Lista para almacenar errores
                         data_error = []
 
-                        # Verificar disponibilidad de stock para todos los productos
+                        # Verificar disponibilidad de stock para todos los productos antes de crear la orden de venta
                         for venta_producto in venta['productos']:
                             producto = get_object_or_404(Producto, id=venta_producto['id'])
                             
@@ -124,6 +128,21 @@ class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
                         if len(data_error) > 0:
                             data['error'] = data_error
                             raise ValueError(data_error) # Forzar rollback
+                        
+                        # Si no hay errores de stock se procede a crear la orden de venta juntos con los detalles de la venta
+                        # Obtener empleado
+                        empleado = Empleado.objects.get(usuario=request.user.pk)
+
+                        # Crear la orden de venta
+                        orden_venta = OrdenDeVenta(
+                            empleado_id=empleado.pk,
+                            cliente_id=int(venta['cliente']),
+                            estado=venta['estado'],
+                            subtotal=float(venta['subtotal']),
+                            iva=float(venta['iva']),
+                            total=float(venta['total']),
+                        )
+                        orden_venta.save()
 
                         # Crear los detalles de la orden de venta
                         for venta_producto in venta['productos']:
@@ -140,9 +159,27 @@ class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
 
                             # Actualizar el stock del producto
                             producto.cantidad_en_stock -= detalle_venta.cantidad
-                            
                             producto.save()
-                        messages.success(request, 'Nueva orden de venta registrada.')
+                        
+                        # Crear un movimiento de inventario para todas las ventas que se realicen en el dia. Establecer el día del movimiento que será obtenido o creado 
+                        hoy = localdate()
+                        # Obtener el movimiento en caso de que exista, con la fecha de el día o crear uno nuevo
+                        movimiento, creado = MovimientoInventario.objects.get_or_create(fecha=hoy)
+
+                        if movimiento or creado:
+                            # Asocia las órdenes de hoy
+                            ordenes_venta_hoy = OrdenDeVenta.objects.filter(fecha__date=hoy)
+                            movimiento.ordenes_venta.set(ordenes_venta_hoy)
+
+                            # Actualiza los totales
+                            movimiento.actualizar_totales()
+
+                            # Mensaje de éxito para la creación de la orden de venta
+                            messages.success(request, 'Nueva orden de venta registrada.')
+                        else:
+                            data_error.append(f"El movimiento de inventario con fecha {hoy} no existe")
+                            data['error'] = data_error
+                            raise ValueError(data_error)
                 except Exception as e:
                     data['error'] = e.args[0]
             else:
@@ -153,7 +190,34 @@ class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
         return JsonResponse(data, safe=False)
 
 
-class GenerarReportePDF(generic.View):
+class GenerarReportePDF(ValidacionPermisosMixin, generic.View):
+    permission_required = ("ventas.view_ordendeventa", "ventas.view_detalleordendeventa", "ventas.add_ordendeventa", "ventas.add_detalleordendeventa")
+    
+    def get(request, self, *args, **kwargs):
+        orden = OrdenDeVenta.objects.get(pk=kwargs.get('pk'))
+        detalle = orden.detalleordendeventa_set.all()
 
-    pass
+        subtotal = orden.subtotal
+        iva = orden.iva
+        total = orden.total
+
+        orden.subtotal = formatear_numero(str(subtotal))
+        orden.iva = formatear_numero(str(iva))
+        orden.total = formatear_numero(str(total))
+
+        context = {
+            'orden': orden,
+            'datos_empresa': {
+                'nombre': 'System Hight',
+                'NIT': '9999999999',
+                'direccion': 'Pasto-Nariño',
+            }
+        }
+        html = render_to_string('reporte_factura.html', context)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="archivo.pdf"'
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Error al generar PDF', status=400)
+        return response
 

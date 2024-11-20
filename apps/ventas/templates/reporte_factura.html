@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+            @frame header_frame {
+                /* Static Frame */
+                -pdf-frame-content: header_content;
+                left: 50pt;
+                width: 512pt;
+                top: 50pt;
+                height: 40pt;
+            }
+            @frame content_frame {
+                /* Content Frame */
+                left: 50pt;
+                width: 512pt;
+                top: 90pt;
+                height: 632pt;
+            }
+            @frame footer_frame {
+                /* Another static Frame */
+                -pdf-frame-content: footer_content;
+                left: 50pt;
+                width: 512pt;
+                top: 772pt;
+                height: 20pt;
+            }
+        }
+        .img-invoice {
+            width: 50px;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .head {
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        #invoice thead tr th {
+            text-align: left;
+            border-bottom: 1px solid black;
+            border-top: 1px solid black;
+            padding-top: 4px;
+        }
+
+        #invoice thead tr {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        #invoice tbody tr {
+            padding: 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+    <body>
+        <div id="header_content">
+            <!-- <img src="{{ icon }}" class="img-invoice"> -->
+            <p class="head">
+                <b style="font-size: 2rem">{{ datos_empresa.nombre}}</b><br />
+                {{ datos_empresa.NIT }}<br />
+                {{ datos_empresa.direccion }}
+            </p>
+        </div>
+        <hr />
+        <p>
+            <b>FACTURA No:</b> {{ orden.id }}<br />
+            <b>FECHA DE VENTA:</b> {{ orden.fecha }}<br />
+            <b>CLIENTE:</b> {{ orden.cliente }}<br />
+            <b>C.C:</b> {{ orden.cliente.documento_identidad }}<br />
+        </p>
+        <table id="invoice" style="margin-top: 250px">
+            <thead>
+                <tr>
+                    <th style="width: 50%">PRODUCTO</th>
+                    <th style="width: 10%">CANT</th>
+                    <th style="width: 20%; text-align: right">P.UNITARIO</th>
+                    <th style="width: 20%; text-align: right">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in orden.detalleordendeventa_set.all %}
+                <tr {% if forloop.first %}style="padding-top: 3px;" {% endif %}>
+                    <td>{{ d.producto.nombre }}</td>
+                    <td class="text-center">{{ d.cantidad }}</td>
+                    <td style="text-align: right">${{ d.precio_unitario }}</td>
+                    <td style="text-align: right">${{ d.subtotal }}</td>
+                </tr>
+                {% endfor %}
+                <table>
+                    <tr style="border-top: 1px solid black; padding-top: 4px">
+                        <td><b>SUBTOTAL</b></td>
+                        <td style="text-align: right">${{ orden.subtotal }}</td>
+                    </tr>
+                    <tr style="padding-top: 0px">
+                        <td><b>IVA 12%</b></td>
+                        <td style="text-align: right">${{ orden.iva }}</td>
+                    </tr>
+                    <tr style="padding-top: 0px">
+                        <td><b>TOTAL A PAGAR</b></td>
+                        <td style="text-align: right">${{ orden.total }}</td>
+                    </tr>
+                </table>
+            </tbody>
+        </table>
+        <div id="footer_content" style="text-align: center;">
+            <p>
+                <b>****GRACIAS POR SU COMPRA****</b>
+                <b>NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES</b>
+            </p>
+        </div>
+    </body>
+</html>

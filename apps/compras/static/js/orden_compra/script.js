@@ -82,7 +82,6 @@ var compra = {
     },
 };
 
-console.log(compra.items)
 
 $(function () {
     // $("#id_productos").on("change", function () {
@@ -207,6 +206,50 @@ $(function () {
         alertas_eliminar(function () {
             compra.items.productos = [];
             compra.lista();
+        });
+    });
+
+    $(".btn-addProveedor").on("click", function () {
+        $("#modalAddProveedor").modal("show");
+        setTimeout(function () {
+            $("#modalAddProveedor").find('input:first').focus();
+        }, 500);
+    });
+
+    // Enviar formulario proveedor
+    $("#id_formulario_proveedor").on("submit", function (e) {
+        e.preventDefault();
+        var parametros = $(this).serializeArray();
+        var url = "/proveedores/agregar-proveedor";
+
+        enviar_datos_ajax(url, parametros, function (response) {
+            if (!response.error) {
+                $("#modalAddProveedor").modal("hide");
+
+                // Limpiar datos del formulario modal
+                var formProveedor = $("#id_formulario_proveedor input");
+                $.each(formProveedor, function (index, campo) {
+                    if ($(campo).is("input")) {
+                        $(campo).val("");
+                    }
+                });
+
+                const nuevoProveedor = $('<option>', {
+                    value: response.proveedor.id,
+                    text: response.proveedor.nombre
+                });
+
+                $('select[name="proveedor"]').append(nuevoProveedor);
+                $('select[name="proveedor"]').val(response.proveedor.id);
+
+                message_exito(
+                    "El registro se ha creado exitosamente.",
+                    "Éxito",
+                    "success"
+                );
+            } else {
+                message_error(response.error);
+            }
         });
     });
 

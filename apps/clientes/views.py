@@ -35,6 +35,7 @@ class ListaClientes(ValidacionPermisosMixin, ListView):
             action = self.request.POST['action']
             if action == 'list_data':
                 data = []
+                # Lista de clientes excepto el cliente '0000000000'
                 for cliente in Cliente.objects.exclude(documento_identidad='0000000000'):
                     data.append(cliente.jsonCliente())
             else:
@@ -111,7 +112,7 @@ class EditarCliente(ValidacionPermisosMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object.pk != 1:
+        if self.object.documento_identidad != '0000000000':
             return super().dispatch(request, *args, **kwargs)
         else:
             return redirect(self.success_url)

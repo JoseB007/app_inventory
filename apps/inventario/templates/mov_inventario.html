@@ -1,0 +1,57 @@
+{% extends 'list.html' %}
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static 'js/lista_mov_inventory.js' %}"></script>
+    <script src="{% static 'js/funciones.js' %}"></script>
+{% endblock %}
+
+{% block columnas %}
+    <th style="width: 5%;">No.</th>
+    <th>Fecha</th>
+    <th>Total ventas</th>
+    <th>Total compras</th>
+    <th style="width: 10%;">Detalles</th>
+{% endblock %}
+
+{% block filas %}
+
+{% endblock %}
+
+{% block botones %}
+
+{% endblock %}
+
+{% block show %}
+    <!-- Modal -->
+    <div class="modal fade" id="modalDetallesOrdenes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-circle-info"></i> Órdenes <small id="id_orden"></small></h5> 
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="tabla_detail" class="table">
+                        <thead>
+                            <th style="width: 5%;">No.</th>
+                            <th>Fecha</th>
+                            <th style="width: 15%;">Estado</th>
+                            <th style="width: 15%;">Total</th>
+                            <th style="text-align: right;">Empleado</th>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <div class="container form-grop">
+                        <button id="btn-Ord_venta" class="btn btn-primary">Órdenes de Venta</button>
+                        <button id="btn-Ord_compra" class="btn btn-primary">Órdenes de Compra</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -82,7 +82,12 @@
                             <input type="hidden" name="accion" value="{{guardar_datos}}">
                             <div class="form-group">
                                 <label for="">Proveedor:</label>
-                                {{ form.proveedor }}
+                                <div class="input-group mb-3">
+                                    {{ form.proveedor }}
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-primary btn-addProveedor"><i class="fa-solid fa-user-plus"></i></button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="">Estado:</label>
@@ -118,6 +123,47 @@
     </div>
 </form>
 
+<form action="." method="post" id="id_formulario_proveedor">
+    {% csrf_token %}
+    <input type="hidden" name="guardar_datos" value="{{ guardar_datos }}">
+    <input type="hidden" name="msj" value="{{ msj }}">
+    <!-- Modal -->
+    <div class="modal fade" id="modalAddProveedor" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <i class="fa-solid fa-circle-info"></i> Agregar Proveedor
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="">Nombre:</label>
+                        {{formProveedor.nombre}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Dirección:</label>
+                        {{formProveedor.direccion}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Teléfono:</label>
+                        {{formProveedor.telefono}}
+                    </div>
+                    <div class="form-group">
+                        <label for="">Correo Electrónico:</label>
+                        {{formProveedor.correo_electronico}}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-flat btn-primary">
+                        <i class="fas fa-save"></i> Guardar registro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 <script>
     var url_redireccion = '{{ url_reedireccion }}'

@@ -37,7 +37,7 @@ function tabla_de_registros(selector, url) {
                 class: "text-right",
                 render: function (data, type, row) {
                     let botones =
-                        '<a href="/ventas/'+ row.id +'/factura.pdf" class="btn btn-md" style="color: #007bff; display:inline"><i class="fas fa-search"></i></a>';
+                        '<a href="/ventas/reportes/facturas/'+ row.id +'/" target="__blank" class="btn btn-md" style="color: #007bff; display:inline"><i class="fa-solid fa-file-pdf"></i></a>';
                     botones +=
                         '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline"><i class="fas fa-search"></i></button>';
                     return botones;

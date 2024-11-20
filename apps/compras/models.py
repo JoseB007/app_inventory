@@ -6,6 +6,7 @@ from django.utils.timezone import localtime
 
 from apps.proveedores.models import Proveedor
 from apps.productos.models import Producto
+from apps.empleados.models import Empleado
 
 # Create your models here.
 class OrdenDeCompra(models.Model):
@@ -18,8 +19,10 @@ class OrdenDeCompra(models.Model):
         (CANCELADA, 'Cancelada'),
         (ANULADA, 'Anulada'),
     ]
-
-    fecha_de_orden = models.DateTimeField(auto_now=True)
+    
+    empleado = models.ForeignKey(Empleado, on_delete=models.SET_NULL, null=True)
+    # auto_now_add: Establece el campo con la fecha y hora actual cuando se crea el objeto por primera vez.
+    fecha_de_orden = models.DateTimeField(auto_now_add=True)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.SET_NULL, null=True)
     estado = models.CharField(max_length=20, choices=ESTADO_DE_ORDEN, default=CANCELADA)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -31,7 +34,7 @@ class OrdenDeCompra(models.Model):
     
     def orden_json(self):
         locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-        orden = model_to_dict(self)
+        orden = model_to_dict(self, exclude=["empleado"])
         orden['estado'] = self.get_estado_display()
         orden['proveedor'] = self.proveedor.nombre if self.proveedor else None
         fecha_formateada = localtime(self.fecha_de_orden).strftime('%d de %B de %Y a las %H:%M')

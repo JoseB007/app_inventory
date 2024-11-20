@@ -4,6 +4,7 @@ from django.utils.timezone import localtime
 
 from apps.clientes.models import Cliente
 from apps.productos.models import Producto
+from apps.empleados.models import Empleado
 
 # Create your models here.
 
@@ -19,6 +20,7 @@ class OrdenDeVenta(models.Model):
         (ANULADA, 'Anulada'),
     ]
 
+    empleado = models.ForeignKey(Empleado, on_delete=models.SET_NULL, null=True)
     fecha = models.DateTimeField(auto_now_add=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True)
     estado = models.CharField(
@@ -29,10 +31,11 @@ class OrdenDeVenta(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
-        return f"Orden de Venta No. {self.id}\n- Estado: {self.estado}"
+        return f"Orden de Venta No. {self.id}"
 
     def orden_Json(self):
-        orden = model_to_dict(self)
+        orden = model_to_dict(self, exclude=["empleado"])
+        #orden['empleado'] = self.empleado.usuario.get_full_name()
         orden['cliente'] = self.cliente.nombre
         orden['fecha'] = localtime(self.fecha).strftime('%d de %b de %Y, a las %H:%M')
         return orden

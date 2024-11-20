@@ -69,6 +69,14 @@
                         </p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{% url 'mov_inventory:movimientos' %}" class="nav-link">
+                        <i class="nav-icon fa-solid fa-chart-line"></i>
+                        <p>
+                            Reportes
+                        </p>
+                    </a>
+                </li>
                 {% if request.user.is_superuser %}
                     <li class="nav-item">
                         <a href="{% url 'empleados:lista-empleados' %}" class="nav-link">
