@@ -10,7 +10,30 @@ var sale = {
 };
 
 function add_sale(item) {
-    sale.productos.push(item);
+    // let p;
+    // $.each(this.items.productos, function (index, producto) {
+    //     if (producto["id"] == item.id) {
+    //         producto.cantidad += item.cantidad;
+    //         p = true;
+    //         return false
+    //     }
+    // });
+    // if (!p) {
+    //     this.items.productos.push(item);
+    // }
+    // this.lista();
+    let productoExistente = sale.productos.find(
+        (producto) => producto.id === item.id
+    );
+
+    if (productoExistente) {
+        // Si el producto ya existe, actualizamos su cantidad
+        productoExistente.cantidad += item.cantidad;
+    } else {
+        // Si no existe, lo agregamos
+        sale.productos.push(item);
+    }
+    // sale.productos.push(item);
     calculate_totals();
     table_sale();
 }

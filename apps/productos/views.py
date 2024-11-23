@@ -9,12 +9,12 @@ from django.http.response import HttpResponse as HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import Producto
-from .forms import FormularioProducto
+from .forms import FormularioProducto #FormFiltroCategoria, FormRangoPrecio
 from apps.usuarios.models import Usuario
 from .mixins import ValidacionPermisosMixin, SuperuserRequiredMixin
 
-# Create your views here.
-class ListaProductos(ValidacionPermisosMixin, generic.ListView):
+
+class ListaProductos(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView):
     model = Producto
     template_name = 'lista_productos.html'
     context_object_name = 'lista_productos'
@@ -27,6 +27,8 @@ class ListaProductos(ValidacionPermisosMixin, generic.ListView):
         context['history'] = reverse_lazy('productos:historial')
         context['lista_registros'] = reverse_lazy('productos:index')
         context['crear_registro'] = reverse_lazy('productos:crear-producto')
+        # context['FormFiltroCategoria'] = FormFiltroCategoria()
+        # context['FormRangoPrecio'] = FormRangoPrecio()
         return context
     
     @csrf_exempt
@@ -48,7 +50,7 @@ class ListaProductos(ValidacionPermisosMixin, generic.ListView):
         return JsonResponse(datos, safe=False)
     
 
-class CrearProducto(ValidacionPermisosMixin, generic.CreateView):
+class CrearProducto(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateView):
     model = Producto
     template_name = 'crear_producto.html'
     form_class = FormularioProducto
@@ -90,7 +92,7 @@ class CrearProducto(ValidacionPermisosMixin, generic.CreateView):
         # return render(request, self.template_name, {'form': form})
          
 
-class ActualizarProducto(ValidacionPermisosMixin, generic.UpdateView):
+class ActualizarProducto(LoginRequiredMixin, ValidacionPermisosMixin, generic.UpdateView):
     model = Producto
     template_name = 'crear_producto.html'
     form_class = FormularioProducto
@@ -129,7 +131,7 @@ class ActualizarProducto(ValidacionPermisosMixin, generic.UpdateView):
         return JsonResponse(datos)
 
 
-class EliminarProducto(ValidacionPermisosMixin, generic.DeleteView):
+class EliminarProducto(LoginRequiredMixin, ValidacionPermisosMixin, generic.DeleteView):
     model = Producto
     template_name = 'eliminar_producto.html'
     success_url = reverse_lazy('productos:index')
@@ -174,10 +176,12 @@ class DashboardView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Administración'
+        context['entidad'] = 'Productos'
+        context['lista_registros'] = reverse_lazy('productos:index')
         return context
 
 
-class HistorialProducto(generic.TemplateView):
+class HistorialProducto(LoginRequiredMixin, generic.TemplateView):
     template_name = 'historial_producto.html'
 
     def get(self, request, *args, **kwargs):

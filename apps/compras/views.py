@@ -21,7 +21,7 @@ from apps.proveedores.forms import FormularioProveedor
 import json
 
 # Create your views here.
-class ListaCompras(ValidacionPermisosMixin, generic.ListView):
+class ListaCompras(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView):
     model = OrdenDeCompra
     template_name = 'lista_compras.html'
     permission_required = ('compras.view_ordendecompra', 'compras.view_detalledecompra')
@@ -59,7 +59,7 @@ class ListaCompras(ValidacionPermisosMixin, generic.ListView):
         return context
     
 
-class CrearOrdenDeCompra(ValidacionPermisosMixin, generic.CreateView):
+class CrearOrdenDeCompra(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateView):
     model = OrdenDeCompra
     form_class = FormularioOrdenDeCompra
     template_name = 'crear_compra.html'

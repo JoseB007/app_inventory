@@ -43,6 +43,19 @@ function tabla_de_registros(selector, url) {
                     return botones;
                 },
             },
+            {
+                targets: [3],
+                render: function (data, type, row) {
+                    let estado;
+                    if (data == "Cancelada") {
+                        estado =
+                            '<span class="badge badge-success">' +
+                            data +
+                            "</span>";
+                    }
+                    return estado;
+                },
+            },
         ],
     });
 }

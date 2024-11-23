@@ -1,5 +1,6 @@
 {% extends 'body.html' %}
 {% load static %}
+
 {% block listado %}
 <!-- dataTables -->
 <link rel="stylesheet" href="{% static 'lib/dataTables-2.1.8/css/dataTables.bootstrap5.min.css' %}" />
@@ -24,6 +25,9 @@
     </div>
 
     <div class="card-body">
+        <!-- {% block filtros %}
+
+        {% endblock %} -->
         <table id="tabla_productos" class="table">
             <thead>
                 {% block columnas %}

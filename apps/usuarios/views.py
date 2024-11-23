@@ -7,6 +7,7 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponse as HttpResponse
 from django.db import transaction
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Usuario
 from .mixins import SuperUserRequiredMixin
@@ -21,7 +22,7 @@ import unicodedata
 import json
 
 # Create your views here.
-class ListaUsuarios(SuperUserRequiredMixin, generic.ListView):
+class ListaUsuarios(LoginRequiredMixin, SuperUserRequiredMixin, generic.ListView):
     model = Usuario
     template_name = "lista_usuarios.html"
 
@@ -53,7 +54,7 @@ class ListaUsuarios(SuperUserRequiredMixin, generic.ListView):
         return JsonResponse(datos, safe=False)
 
 
-class CrearUsuario(SuperUserRequiredMixin, generic.CreateView):
+class CrearUsuario(LoginRequiredMixin, SuperUserRequiredMixin, generic.CreateView):
     form_class = FormularioUsuario
     template_name = 'crear_usuario.html'
     success_url = reverse_lazy('usuarios:lista-usuarios')
@@ -119,7 +120,7 @@ class CrearUsuario(SuperUserRequiredMixin, generic.CreateView):
     # Enviar correo electronico al usuario con sus credenciales de incio de sesión
     
 
-class EditarUsuario(SuperUserRequiredMixin, generic.UpdateView):
+class EditarUsuario(LoginRequiredMixin, SuperUserRequiredMixin, generic.UpdateView):
     model = Usuario
     template_name = 'editar_usuario.html'
     form_class = FormularioUsuario
@@ -157,7 +158,7 @@ class EditarUsuario(SuperUserRequiredMixin, generic.UpdateView):
         return JsonResponse(datos)
 
 
-class EliminarUsuario(SuperUserRequiredMixin, generic.DeleteView):
+class EliminarUsuario(LoginRequiredMixin, SuperUserRequiredMixin, generic.DeleteView):
     model = Usuario
     template_name = 'eliminar_usuario.html'
     success_url = reverse_lazy('usuarios:lista-usuarios')
@@ -185,8 +186,7 @@ class EliminarUsuario(SuperUserRequiredMixin, generic.DeleteView):
         return JsonResponse(datos)
 
 
-
-class EditarPerfilUsuario(generic.UpdateView):
+class EditarPerfilUsuario(LoginRequiredMixin, generic.UpdateView):
     model = Usuario
     template_name = 'perfil.html'
     form_class = FormularioPerfilUsuario

@@ -14,7 +14,7 @@ from .forms import FormularioProveedor
 from .mixins import SuperUserRequiredMixin, ValidacionPermisosMixin
 
 # Create your views here.
-class ListaProveedores(ValidacionPermisosMixin, generic.ListView):
+class ListaProveedores(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView):
     model = Proveedor
     template_name = 'lista_proveedores.html'
     permission_required = 'proveedores.view_proveedor'
@@ -47,7 +47,7 @@ class ListaProveedores(ValidacionPermisosMixin, generic.ListView):
         return JsonResponse(datos, safe=False)
 
 
-class CrearProveedor(ValidacionPermisosMixin, generic.CreateView):
+class CrearProveedor(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateView):
     model = Proveedor
     template_name = 'crear_proveedor.html'
     form_class = FormularioProveedor
@@ -94,7 +94,7 @@ class CrearProveedor(ValidacionPermisosMixin, generic.CreateView):
         return JsonResponse(datos)
 
 
-class EliminarProveedor(ValidacionPermisosMixin, generic.DeleteView):
+class EliminarProveedor(LoginRequiredMixin, ValidacionPermisosMixin, generic.DeleteView):
     model = Proveedor
     template_name = 'eliminar_proveedor.html'
     success_url = reverse_lazy('proveedores:lista-proveedores')
@@ -123,7 +123,7 @@ class EliminarProveedor(ValidacionPermisosMixin, generic.DeleteView):
         return JsonResponse(datos)
     
 
-class EditarProveedor(ValidacionPermisosMixin, generic.UpdateView):
+class EditarProveedor(LoginRequiredMixin, ValidacionPermisosMixin, generic.UpdateView):
     model = Proveedor
     template_name = 'editar_proveedor.html'
     form_class = FormularioProveedor

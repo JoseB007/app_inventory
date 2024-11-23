@@ -1,5 +1,5 @@
 from django.forms import *
-from apps.productos.models import Producto
+from apps.productos.models import Producto, Categoria
 
 
 class FormularioProducto(ModelForm):
@@ -14,7 +14,7 @@ class FormularioProducto(ModelForm):
         model = Producto
         # Agregar todos los campos en el formulario
         # fields = ['nombre', 'descripcion', 'precio', 'cantidad_en_stock', 'categoria']
-        fields = '__all__' 
+        fields = '__all__'
         labels = {
             'descripcion': 'Descripción',
             'categoria': 'Categoría'
@@ -34,3 +34,19 @@ class FormularioProducto(ModelForm):
             )
         }
         exclude = ['cantidad_en_stock']
+
+
+# class FormFiltroCategoria(Form):
+#     categoria = ModelChoiceField(
+#         label="Categoría", queryset=Categoria.objects.all(), required=False)
+#     #categoria.widget.attrs.update({'class': 'form-control'})
+
+
+# class FormRangoPrecio(Form):
+#     pracio_min = DecimalField(label="Precio mínimo",
+#                               max_digits=10, decimal_places=2, required=False)
+#     pracio_max = DecimalField(label="Precio máximo",
+#                               max_digits=10, decimal_places=2, required=False)
+#     # pracio_min.widget.attrs.update({'class': 'form-control'})
+#     # pracio_max.widget.attrs.update({'class': 'form-control'})
+    

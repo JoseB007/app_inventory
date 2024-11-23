@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from apps.clientes.models import Cliente
 from apps.clientes.forms import FormularioCliente
@@ -12,7 +13,7 @@ from apps.clientes.mixins import ValidacionPermisosMixin
 # Create your views here.
 
 
-class ListaClientes(ValidacionPermisosMixin, ListView):
+class ListaClientes(LoginRequiredMixin, ValidacionPermisosMixin, ListView):
     model = Cliente
     template_name = 'lista_clientes.html'
     permission_required = 'clientes.view_cliente'
@@ -46,7 +47,7 @@ class ListaClientes(ValidacionPermisosMixin, ListView):
         return JsonResponse(data, safe=False)
 
 
-class CrearCliente(ValidacionPermisosMixin, CreateView):
+class CrearCliente(LoginRequiredMixin, ValidacionPermisosMixin, CreateView):
     model = Cliente
     form_class = FormularioCliente
     template_name = 'crear_cliente.html'
@@ -94,7 +95,7 @@ class CrearCliente(ValidacionPermisosMixin, CreateView):
         return JsonResponse(datos)
     
 
-class EditarCliente(ValidacionPermisosMixin, UpdateView):
+class EditarCliente(LoginRequiredMixin, ValidacionPermisosMixin, UpdateView):
     model = Cliente
     template_name = 'editar_cliente.html'
     form_class = FormularioCliente
@@ -140,7 +141,7 @@ class EditarCliente(ValidacionPermisosMixin, UpdateView):
         return JsonResponse(datos)
 
 
-class EliminarCliente(ValidacionPermisosMixin, DeleteView):
+class EliminarCliente(LoginRequiredMixin, ValidacionPermisosMixin, DeleteView):
     model = Cliente
     template_name = 'eliminar_cliente.html'
     success_url = reverse_lazy('clientes:lista-clientes')

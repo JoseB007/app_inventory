@@ -11,7 +11,7 @@ from .mixins import SuperuserRequiredMixin
 
 
 # Create your views here.
-class CrearEmpleado(SuperuserRequiredMixin, generic.CreateView):
+class CrearEmpleado(LoginRequiredMixin, SuperuserRequiredMixin, generic.CreateView):
     model = Empleado
     form_class = FormularioEmpleado
     template_name = 'crear_empleado.html'
@@ -47,7 +47,7 @@ class CrearEmpleado(SuperuserRequiredMixin, generic.CreateView):
         return JsonResponse(datos)
 
 
-class ListaEmpleados(SuperuserRequiredMixin, generic.ListView):
+class ListaEmpleados(LoginRequiredMixin, SuperuserRequiredMixin, generic.ListView):
     model = Empleado
     template_name = 'lista_empleados.html'
     context_object_name = 'lista_empleados'
@@ -80,7 +80,7 @@ class ListaEmpleados(SuperuserRequiredMixin, generic.ListView):
         return JsonResponse(datos, safe=False)
 
 
-class EditarEmpleado(SuperuserRequiredMixin, generic.UpdateView):
+class EditarEmpleado(LoginRequiredMixin, SuperuserRequiredMixin, generic.UpdateView):
     model = Empleado
     template_name = 'crear_empleado.html'
     form_class = FormularioEmpleado
@@ -118,7 +118,7 @@ class EditarEmpleado(SuperuserRequiredMixin, generic.UpdateView):
         return JsonResponse(datos)
 
 
-class EliminarEmpleado(SuperuserRequiredMixin, generic.DeleteView):
+class EliminarEmpleado(LoginRequiredMixin, SuperuserRequiredMixin, generic.DeleteView):
     model = Empleado
     template_name = 'eliminar_empleado.html'
     success_url = reverse_lazy('empleados:lista-empleados')
@@ -146,7 +146,7 @@ class EliminarEmpleado(SuperuserRequiredMixin, generic.DeleteView):
         return JsonResponse(datos)
 
 
-class DashboardView(SuperuserRequiredMixin, generic.TemplateView):
+class DashboardView(LoginRequiredMixin, SuperuserRequiredMixin, generic.TemplateView):
     template_name = 'dashboard.html'
 
     def dispatch(self, request, *args, **kwargs):

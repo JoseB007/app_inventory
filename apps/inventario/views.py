@@ -5,15 +5,18 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils.timezone import localtime
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from apps.inventario.models import MovimientoInventario
+from apps.inventario.mixins import ValidacionPermisosMixin
 from apps.empleados.models import Empleado
 
 # Create your views here.
-class ListaMovimientosIventario(ListView):
+class ListaMovimientosIventario(LoginRequiredMixin, ValidacionPermisosMixin, ListView):
     model = MovimientoInventario
     template_name = "mov_inventario.html"
+    permission_required = 'inventario.view_movimientoinventario'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -11,6 +11,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.timezone import now, localdate
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from apps.productos.models import Producto
 from apps.ventas.utils import formatear_numero
@@ -27,7 +28,7 @@ from xhtml2pdf import pisa
 
 
 # Create your views here.
-class ListaVentas(ValidacionPermisosMixin, generic.ListView):
+class ListaVentas(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView):
     model = OrdenDeVenta
     template_name = 'lista_ventas.html'
     permission_required = ("ventas.view_ordendeventa", "ventas.view_detalleordendeventa")
@@ -64,7 +65,7 @@ class ListaVentas(ValidacionPermisosMixin, generic.ListView):
         return JsonResponse(data, safe=False)
 
 
-class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
+class CrearVenta(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateView):
     model = OrdenDeVenta
     form_class = FormularioOrdenDeVenta
     template_name = 'crear_venta.html'
@@ -190,7 +191,7 @@ class CrearVenta(ValidacionPermisosMixin, generic.CreateView):
         return JsonResponse(data, safe=False)
 
 
-class GenerarReportePDF(ValidacionPermisosMixin, generic.View):
+class GenerarReportePDF(LoginRequiredMixin, ValidacionPermisosMixin, generic.View):
     permission_required = ("ventas.view_ordendeventa", "ventas.view_detalleordendeventa", "ventas.add_ordendeventa", "ventas.add_detalleordendeventa")
     
     def get(request, self, *args, **kwargs):

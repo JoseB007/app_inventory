@@ -25,7 +25,30 @@ var compra = {
         $("#id_total").val(formatearNumero(this.items.total));
     },
     agregar: function (item) {
-        this.items.productos.push(item);
+        // let p;
+        // $.each(this.items.productos, function (index, producto) {
+        //     if (producto["id"] == item.id) {
+        //         producto.cantidad += item.cantidad;
+        //         p = true;
+        //         return false
+        //     }
+        // });
+        // if (!p) {
+        //     this.items.productos.push(item);
+        // }
+        // this.lista();
+        let productoExistente = this.items.productos.find(
+            (producto) => producto.id === item.id
+        );
+
+        if (productoExistente) {
+            // Si el producto ya existe, actualizamos su cantidad
+            productoExistente.cantidad += item.cantidad;
+        } else {
+            // Si no existe, lo agregamos
+            this.items.productos.push(item);
+        }
+        // Actualizamos la lista
         this.lista();
     },
     lista: function () {
@@ -65,9 +88,9 @@ var compra = {
                 {
                     targets: [1, 3],
                     render: function (data, type, row) {
-                        var numero = parseFloat(data)
-                        var numero_formateado = formatearNumero(numero)
-                        return "$" + numero_formateado
+                        var numero = parseFloat(data);
+                        var numero_formateado = formatearNumero(numero);
+                        return "$" + numero_formateado;
                     },
                 },
                 {
@@ -81,7 +104,6 @@ var compra = {
         });
     },
 };
-
 
 $(function () {
     // $("#id_productos").on("change", function () {
@@ -148,10 +170,8 @@ $(function () {
         },
         select: function (event, ui) {
             event.preventDefault();
-            //console.clear()
             ui.item.cantidad = 1;
             ui.item.subtotal = 0.0;
-            //console.log(compra.items)
             compra.agregar(ui.item);
             $(this).val("");
         },
@@ -212,7 +232,7 @@ $(function () {
     $(".btn-addProveedor").on("click", function () {
         $("#modalAddProveedor").modal("show");
         setTimeout(function () {
-            $("#modalAddProveedor").find('input:first').focus();
+            $("#modalAddProveedor").find("input:first").focus();
         }, 500);
     });
 
@@ -234,9 +254,9 @@ $(function () {
                     }
                 });
 
-                const nuevoProveedor = $('<option>', {
+                const nuevoProveedor = $("<option>", {
                     value: response.proveedor.id,
-                    text: response.proveedor.nombre
+                    text: response.proveedor.nombre,
                 });
 
                 $('select[name="proveedor"]').append(nuevoProveedor);
