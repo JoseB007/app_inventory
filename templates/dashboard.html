@@ -1,1 +1,361 @@
 {% extends 'body.html' %}
+{% load static %}
+{% block graficos %}
+    <!-- highcharts -->
+    <script src="{% static 'lib/highcharts-11.4.8/highcharts.js' %}"></script> 
+    <script src="{% static 'js/graficos.js' %}"></script>
+{% endblock %} 
+{% block content %}
+
+<!-- Card total de ventas -->
+<div class="row">
+    <div class="col-lg-4">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            {{ total_productos }}
+                        </font>
+                    </font>
+                </h3>
+
+                <p>
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Productos en inventario
+                        </font>
+                    </font>
+                </p>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            {{ total_sum_ventas_hoy }}
+                        </font>
+                    </font>
+                </h3>
+
+                <p>
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Total de ventas registradas el día de hoy
+                        </font>
+                    </font>
+                </p>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-dolly"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            {{ total_sum_compras_hoy }}
+                        </font>
+                    </font>
+                </h3>
+
+                <p>
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Total de compras registradas el día de hoy
+                        </font>
+                    </font>
+                </p>
+            </div>
+            <div class="icon">
+                <i class="fa-solid fa-cart-arrow-down"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráfico -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header border-transparent">
+                <h3 class="card-title">
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Últimas ventas
+                        </font>
+                    </font>
+                </h3>
+            </div>
+            <div class="card-body p-0">
+                <div id="container" style="width:100%; height:400px;"></div>
+                <script>
+                    const totalMesesOrdenesVentas = {{ total_meses_ordenes_venta_json }};
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards total de órdenes de hoy -->
+    <div class="col-lg-4">
+        {% if productos_stock_insuficiente %}
+        <!-- Tabla de productos sin stock -->
+        <div class="info-box bg-warning">
+            <div class="info-box-content">
+                <span class="info-box-number" style="padding-left: .5rem;">Productos con bajo stock en el inventario</span><br>
+                <table class="table table-responsive table-borderless">
+                    <thead>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                    </thead>
+                    <tbody>
+                        {% for p in productos_stock_insuficiente %}
+                            <tr style="margin: 0;">
+                                <td style="margin: 0; padding-top: 0; padding-bottom: 0;">{{ p.nombre }}</td>
+                                <td style="margin: 0; padding-top: 0; padding-bottom: 0;">{{ p.stock }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}  
+
+        <div class="info-box">
+            <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
+            <div class="info-box-content">
+                <font style="vertical-align: inherit">
+                    <font style="vertical-align: inherit">
+                        Órdenes de venta registradas el día de hoy
+                    </font>
+                </font>
+                <!-- <span class="info-box-text">Órdenes de venta registradas el dia de hoy</span> -->
+                <span class="info-box-number" style="font-size: 2rem;">
+                    {{ total_ordenes_venta }} 
+                </span>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+            <div class="info-box-content">
+                <font style="vertical-align: inherit">
+                    <font style="vertical-align: inherit">
+                        Órdenes de compra registradas el día de hoy
+                    </font>
+                </font>
+                <!-- <span class="info-box-text">Órdenes de compra registradas el dia de hoy</span> -->
+                <span class="info-box-number" style="font-size: 2rem;">
+                    {{ total_ordenes_compra }} 
+                </span>
+            </div>
+        </div>      
+    </div>
+</div>
+
+<!-- Tablas últimos productos y compras registradas -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header border-transparent">
+                <h3 class="card-title">
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Últimas órdenes de compra registradas
+                        </font>
+                    </font>
+                </h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table m-0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            No.
+                                        </font>
+                                    </font>
+                                </th>
+                                <th>
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            Artículo(s)
+                                        </font>
+                                    </font>
+                                </th>
+                                <th>
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            Estado
+                                        </font>
+                                    </font>
+                                </th>
+                                <th>
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            Fecha
+                                        </font>
+                                    </font>
+                                </th>
+                                <th>
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            Total
+                                        </font>
+                                    </font>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for compra in ultimas_compras %}
+                            <tr>
+                                <td>
+                                    <a href="#">
+                                        <font style="vertical-align: inherit">
+                                            <font style="vertical-align: inherit">
+                                                {{compra.id}}
+                                            </font>
+                                        </font>
+                                    </a>
+                                </td>
+                                <td>
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            {% for producto in compra.productos %}
+                                                <p style="margin: 0;">{{producto}}</p>
+                                            {% endfor %}
+                                        </font>
+                                    </font>
+                                </td>
+                                <td>
+                                    <span class="badge badge-success">
+                                        <font style="vertical-align: inherit">
+                                            <font style="vertical-align: inherit">
+                                                {{compra.estado}}
+                                            </font>
+                                        </font>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                        <font style="vertical-align: inherit">
+                                            <font style="vertical-align: inherit">
+                                                {{compra.fecha}}
+                                            </font>
+                                        </font>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="sparkbar" data-color="#00a65a" data-height="20">
+                                        <font style="vertical-align: inherit">
+                                            <font style="vertical-align: inherit">
+                                                ${{compra.total}}
+                                            </font>
+                                        </font>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer clearfix">
+                <a href="{% url 'compras:agregar-compra' %}" class="btn btn-sm btn-info float-left">
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Realizar nueva compra
+                        </font>
+                    </font>
+                </a>
+                <a href="{% url 'compras:lista-compras' %}" class="btn btn-sm btn-secondary float-right">
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Ver compras
+                        </font>
+                    </font>
+                </a>
+            </div>
+            <!-- /.card-footer -->
+        </div>
+    </div>
+
+    <!-- Productos añadidos recientemente -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Productos añadidos recientemente
+                        </font>
+                    </font>
+                </h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body p-0">
+                <ul class="products-list product-list-in-card pl-2 pr-2">
+                    {% for producto in ultimos_productos_agregados %}
+                    <li class="item">
+                        <div class="product-info" style="margin-left: 0;">
+                            <a href="#" class="product-title">
+                                <font style="vertical-align: inherit">
+                                    <font style="vertical-align: inherit">
+                                        {{ producto.producto }}
+                                    </font>
+                                </font>
+                                <span class="badge badge-warning float-right">
+                                    <font style="vertical-align: inherit">
+                                        <font style="vertical-align: inherit">
+                                            ${{ producto.precio }}
+                                        </font>
+                                    </font>
+                                </span>
+                            </a>
+                            <span class="product-description">
+                                <font style="vertical-align: inherit">
+                                    <font style="vertical-align: inherit">
+                                        {{ producto.descripcion }}
+                                    </font>
+                                </font>
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer text-center">
+                <a href="{% url 'productos:index' %}" class="uppercase">
+                    <font style="vertical-align: inherit">
+                        <font style="vertical-align: inherit">
+                            Ver todos los productos
+                        </font>
+                    </font>
+                </a>
+            </div>
+            <!-- /.card-footer -->
+        </div>        
+    </div>
+</div>
+
+{% endblock %}

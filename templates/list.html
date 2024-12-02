@@ -25,9 +25,6 @@
     </div>
 
     <div class="card-body">
-        <!-- {% block filtros %}
-
-        {% endblock %} -->
         <table id="tabla_productos" class="table">
             <thead>
                 {% block columnas %}
@@ -46,6 +43,9 @@
         <a href="{{ crear_registro }}" class="btn btn-primary btn-flat">
             <i class="fas fa-plus"></i> Nuevo registro
         </a>
+        {% block filtros %}
+
+        {% endblock %}
         {% endblock %}
     </div>
 </div>

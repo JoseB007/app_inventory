@@ -52,7 +52,8 @@ class ListaMovimientosIventario(LoginRequiredMixin, ValidacionPermisosMixin, Lis
                         'total': orden_venta.total,
                     }
                     item['fecha'] = localtime(orden_venta.fecha).strftime('%d de %b de %Y a las %H:%M')
-                    item['empleado'] = str(orden_venta.empleado) if orden_venta.empleado else None,
+                    item['empleado'] = orden_venta.empleado.usuario.get_full_name() if orden_venta.empleado else None
+                    item['productos'] = [producto.producto.nombre for producto in orden_venta.detalleordendeventa_set.all()]
                     lista_ord_ventas.append(item)
                 for orden_compra in mov_inv.ordenes_compra.all():
                     item = {
@@ -61,7 +62,8 @@ class ListaMovimientosIventario(LoginRequiredMixin, ValidacionPermisosMixin, Lis
                         'total': orden_compra.total,
                     }
                     item['fecha'] = localtime(orden_compra.fecha_de_orden).strftime('%d de %b de %Y a las %H:%M')
-                    item['empleado'] = str(orden_compra.empleado) if orden_compra.empleado else None,
+                    item['empleado'] = orden_compra.empleado.usuario.get_full_name() if orden_compra.empleado else None
+                    item['productos'] = [producto.producto.nombre for producto in orden_compra.detalledecompra_set.all()]
                     lista_ord_compra.append(item)
                 datos.append(lista_ord_ventas)
                 datos.append(lista_ord_compra)

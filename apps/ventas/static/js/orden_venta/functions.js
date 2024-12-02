@@ -313,6 +313,7 @@ $(function () {
         // });
     });
 
+    // Agregar un nuevo cliente
     $(".btn-addCliente").on("click", function () {
         $("#modalAddCliente").modal("show");
         setTimeout(function () {

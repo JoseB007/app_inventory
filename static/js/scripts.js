@@ -16,23 +16,23 @@ function enviar_datos_ajax(url, parametros, url_redireccion) {
                         data: parametros,
                         dataType: "json",
                     })
-                    .done(function (data) {
-                        /*Validar si la variable data no contiene una propiedad llamada error*/
-                        if (!data.error) {
-                            if (typeof url_redireccion === "function") {
-                                url_redireccion(data);
+                        .done(function (data) {
+                            /*Validar si la variable data no contiene una propiedad llamada error*/
+                            if (!data.error) {
+                                if (typeof url_redireccion === "function") {
+                                    url_redireccion(data);
+                                } else {
+                                    location.href = url_redireccion;
+                                    return false;
+                                }
                             } else {
-                                location.href = url_redireccion;
-                                return false;
+                                message_error(data.error);
                             }
-                        } else {
-                            message_error(data.error);
-                        }
-                    })
-                    .fail(function (jqXHR, textStatus, errorThrown) {
-                        alert(textStatus + ": " + errorThrown);
-                    })
-                    .always(function (data) { });
+                        })
+                        .fail(function (jqXHR, textStatus, errorThrown) {
+                            alert(textStatus + ": " + errorThrown);
+                        })
+                        .always(function (data) {});
                 },
             },
             danger: {
@@ -110,3 +110,32 @@ function formatearNumero(numero, decimales = 0) {
     num[0] = num[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     return num.join(".");
 }
+
+$(function () {
+    $("#form_filtros").on("submit", function (e) {
+        e.preventDefault();
+        let datos = $(this).serializeArray();
+        let parametros = {
+            action: "filtrar",
+            filtros: JSON.stringify(datos)
+        }
+        $.ajax({
+            url: window.location.pathname,
+            type: "POST",
+            data: parametros,
+            success: function (response) {
+                if (!response.error) {
+                    tabla_filtros($("#tabla_productos"), response, url)
+                    $("#modalfiltros").modal('hide')
+                } else {
+                    message_error(response.error);
+                }
+            },
+            error: function (xhr, status) {
+                alert("Disculpe, existió un problema.", status + ": " + xhr);
+            },
+        });
+    });
+});
+
+

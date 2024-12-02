@@ -1,9 +1,9 @@
 {% load static %}
 <aside class="main-sidebar sidebar-light-primary elevation-4">
-    <a href="{% url 'empleados:dashboard' %}" class="brand-link">
+    <a href="{% url 'productos:dashboard' %}" class="brand-link">
         <img src="{% static 'img/logo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
             style="opacity: .8">
-        <span class="brand-text font-weight-light">AdminLTE 3</span>
+        <span class="brand-text font-weight-light">FromSoftware</span>
     </a>
     <div class="sidebar">
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -11,16 +11,16 @@
                 <img src="{% static 'img/user.png' %}" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">
+                <a href="{% url 'usuarios:perfil' %}" class="d-block">
                     {% if request.user %}
                         {% if request.user.is_authenticated %}
-                            {{ request.user.get_username }}<br>
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
                         {% elif request.user.is_anonymous %}
                             Usuario
-                        {% endif %}
-
-                        {% if request.user.is_superuser %}
-                            Super Usuario
                         {% endif %}
                     {% endif %}
                 </a>
@@ -46,18 +46,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'compras:lista-compras' %}" class="nav-link">
+                    <a href="{% url 'compras:agregar-compra' %}" class="nav-link">
                         <i class="nav-icon fa-solid fa-cart-flatbed"></i>
                         <p>
-                            Compras
+                            Comprar
                         </p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{% url 'ventas:lista-ventas' %}" class="nav-link">
+                    <a href="{% url 'ventas:agregar-venta' %}" class="nav-link">
                         <i class="nav-icon fa-solid fa-wallet"></i>
                         <p>
-                            Ventas
+                            Vender
                         </p>
                     </a>
                 </li>

@@ -2,16 +2,26 @@ from django.views import generic
 from django.contrib import messages
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.utils.timezone import localtime
+from django.utils.timezone import localtime, localdate
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponse as HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db.models import Sum
 
 from .models import Producto
 from .forms import FormularioProducto #FormFiltroCategoria, FormRangoPrecio
 from apps.usuarios.models import Usuario
-from .mixins import ValidacionPermisosMixin, SuperuserRequiredMixin
+from .mixins import ValidacionPermisosMixin
+from apps.compras.models import OrdenDeCompra
+from apps.ventas.models import OrdenDeVenta
+from .utils import formatear_numero
+
+
+from datetime import date
+
+
+import json
 
 
 class ListaProductos(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView):
@@ -62,7 +72,7 @@ class CrearProducto(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateV
         context['title'] = 'Agregar producto'
         context['entidad'] = 'Productos'
         context['lista_registros'] = reverse_lazy('productos:index')
-        context['url_reedireccion'] = reverse_lazy('productos:index')
+        context['url_reedireccion'] = self.success_url
         context['guardar_datos'] = 'guardar'
         return context
     
@@ -167,8 +177,9 @@ class DetalleProducto(generic.DetailView):
     context_object_name = 'detalle_producto'
 
 
-class DashboardView(generic.TemplateView):
+class DashboardView(LoginRequiredMixin, ValidacionPermisosMixin, generic.TemplateView):
     template_name = 'dashboard.html'
+    permission_required = 'productos.view_dashboard'
 
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
@@ -178,7 +189,92 @@ class DashboardView(generic.TemplateView):
         context['title'] = 'Administración'
         context['entidad'] = 'Productos'
         context['lista_registros'] = reverse_lazy('productos:index')
+        context['total_productos'] = self.total_productos()
+        context['total_ordenes_compra'] = self.total_ordenes_compra_hoy()
+        context['total_ordenes_venta'] = self.total_ordenes_venta_hoy()
+        context['ultimos_productos_agregados'] = self.ultimos_productos_agregados()
+        context['ultimas_compras'] = self.ultimas_compras_agregadas()
+        context['total_meses_ordenes_venta_json'] = json.dumps(self.total_meses_ordenes_venta())
+        context['total_sum_ventas_hoy'] = self.total_sum_ventas_hoy()
+        context['total_sum_compras_hoy'] = self.total_sum_compras_hoy()
+        context['productos_stock_insuficiente'] = self.productos_stock_insuficiente()
         return context
+    
+    def total_productos(self):
+        total_productos = Producto.objects.all().count()
+        return total_productos
+    
+    def total_ordenes_compra_hoy(self):
+        hoy = localdate()
+        ordenes_compra = OrdenDeCompra.objects.filter(fecha_de_orden__date=hoy).count()
+        return ordenes_compra
+
+    def total_ordenes_venta_hoy(self):
+        hoy = localdate()
+        ordenes_venta = OrdenDeVenta.objects.filter(fecha__date=hoy).count()
+        return ordenes_venta
+    
+    def ultimos_productos_agregados(self):
+        datos = []
+        productos = Producto.objects.all().order_by('-id')[:3]
+        for producto in productos:
+            item = {
+                'producto': producto.nombre,
+                'descripcion': producto.descripcion,
+                'precio': formatear_numero(str(producto.precio))
+            }
+            datos.append(item)
+        return datos
+
+    def ultimas_compras_agregadas(self):
+        datos = []
+        compras = OrdenDeCompra.objects.all().order_by('-id')[:3]
+        for c in compras:
+            item = {
+                'id': c.pk,
+                'productos': [producto.producto.nombre for producto in c.detalledecompra_set.all()],
+                'estado': c.estado,
+                'fecha': c.fecha_de_orden.strftime("%d-%b-%Y"),
+                'total': formatear_numero(str(c.total))
+            }
+            datos.append(item)
+        return datos
+    
+    def total_meses_ordenes_venta(self):
+        año = date.today().year
+        lista_ordenes = []
+        
+        for mes in range(1, 13):
+            total_ordenes = OrdenDeVenta.objects.filter(
+                fecha__year=año,
+                fecha__month=mes
+            ).aggregate(total=Sum('total'))['total'] or 0
+            
+            lista_ordenes.append(float(total_ordenes))
+        
+        return lista_ordenes
+
+    def total_sum_ventas_hoy(self):
+        hoy = localdate()
+        t_suma_ventas_hoy = OrdenDeVenta.objects.filter(fecha__date=hoy).aggregate(total=Sum('total'))['total'] or 0
+        return formatear_numero(str(t_suma_ventas_hoy))
+    
+    def total_sum_compras_hoy(self):
+        hoy = localdate()
+        t_suma_compras_hoy = OrdenDeCompra.objects.filter(fecha_de_orden__date=hoy).aggregate(total=Sum('total'))['total'] or 0
+        return formatear_numero(str(t_suma_compras_hoy))
+
+    def productos_stock_insuficiente(self):
+        prod = Producto.objects.filter(cantidad_en_stock__lte=10).order_by("cantidad_en_stock")[:4]
+
+        lista_prod_stock_insuficiente = [
+            {'nombre': p.nombre, 'stock': p.cantidad_en_stock} for p in prod
+        ]
+
+        if not lista_prod_stock_insuficiente:
+            return None
+
+        return lista_prod_stock_insuficiente
 
 
 class HistorialProducto(LoginRequiredMixin, generic.TemplateView):

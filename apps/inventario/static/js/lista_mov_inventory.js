@@ -1,12 +1,12 @@
 let tabla;
 let data;
+let tabla_detalle;
 
 function tabla_de_registros(selector, url_language) {
     tabla = $(selector).DataTable({
         destroy: true,
         responsive: true,
         deferRender: true,
-        autoWidth: false,
         language: {
             url: url_language,
         },
@@ -21,6 +21,8 @@ function tabla_de_registros(selector, url_language) {
         columns: [
             { data: "id" },
             { data: "fecha" },
+            { data: "tl_ordenes.0" },
+            { data: "tl_ordenes.1" },
             { data: "total_ventas" },
             { data: "total_compras" },
             { data: "id" },
@@ -36,10 +38,55 @@ function tabla_de_registros(selector, url_language) {
             },
             {
                 targets: [-1],
+                class: "text-right",
                 render: function (data, type, row) {
                     let boton =
                         '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline"><i class="fas fa-search"></i></button>';
                     return boton;
+                },
+            },
+        ],
+    });
+}
+
+function mostrar_orden(orden) {
+    tabla_detalle = $("#tabla_detail").DataTable({
+        destroy: true,
+        responsive: true,
+        deferRender: true,
+        language: {
+            url: url,
+        },
+        data: orden,
+        columns: [
+            { data: "id" },
+            { data: "fecha" },
+            { data: "estado" },
+            { data: "productos" },
+            { data: "total" },
+            { data: "empleado" },
+        ],
+        columnDefs: [
+            {
+                targets: [-2],
+                render: function (data, type, row) {
+                    let num = parseFloat(data);
+                    let num_formateado = formatearNumero(num);
+                    return num_formateado;
+                },
+            },
+            {
+                targets: [-1],
+                class: "text-right",
+            },
+            {
+                targets: [3],
+                render: function (data, type, row) {
+                    let productos = ""
+                    $.each(data, function (index, producto) {
+                        productos += "<p style='margin-bottom: .5rem;'>" + producto + "</p>";
+                    })
+                    return productos
                 },
             },
         ],
@@ -62,8 +109,19 @@ $(function () {
                 },
                 dataType: "json",
                 success: function (response) {
-                    data = response;
-                    mostrar_orden(0);
+                    data = response
+                    if (data[0].length > 0) {
+                        mostrar_orden(data[0]);
+                        $("#id_orden").text("(Órdenes de Venta)");
+                        $("button[id='btn-Ord_venta']").css("display", "none");
+                        $("button[id='btn-Ord_compra']").show();
+                    }
+                    else {
+                        mostrar_orden(data[1]),
+                        $("#id_orden").text("(Órdenes de Compra)");
+                        $("button[id='btn-Ord_compra']").css("display", "none");
+                        $("button[id='btn-Ord_venta']").show();
+                    }
                 },
                 error: function (xhr, status) {
                     alert(
@@ -72,58 +130,22 @@ $(function () {
                     );
                 },
             });
-            $("#id_orden").text("(Órdenes de Venta)");
-            $("button[id='btn-Ord_venta']").css("display", "none")
-            $("button[id='btn-Ord_compra']").show();
             $("#modalDetallesOrdenes").modal("show");
         }
     );
 
-    function mostrar_orden(orden) {
-        $("#tabla_detail").DataTable({
-            destroy: true,
-            responsive: true,
-            autoWidth: false,
-            language: {
-                url: url,
-            },
-            data: data[orden],
-            columns: [
-                { data: "id" },
-                { data: "fecha" },
-                { data: "estado" },
-                { data: "total" },
-                { data: "empleado" },
-            ],
-            columnDefs: [
-                {
-                    targets: [-2],
-                    render: function (data, type, row) {
-                        let num = parseFloat(data);
-                        let num_formateado = formatearNumero(num);
-                        return num_formateado;
-                    },
-                },
-                {
-                    targets: [-1],
-                    class: "text-right",
-                },
-            ],
-        });
-    }
 
     $("button[id='btn-Ord_venta']").on("click", function () {
         $("#id_orden").text("(Órdenes de Venta)");
-        mostrar_orden(0);
-        $("button[id='btn-Ord_venta']").css("display", "none")
+        mostrar_orden(data[0]);
+        $("button[id='btn-Ord_venta']").css("display", "none");
         $("button[id='btn-Ord_compra']").show();
     });
 
     $("button[id='btn-Ord_compra']").on("click", function () {
         $("#id_orden").text("(Órdenes de Compra)");
-        mostrar_orden(1);
-        $("button[id='btn-Ord_compra']").css("display", "none")
+        mostrar_orden(data[1]);
+        $("button[id='btn-Ord_compra']").css("display", "none");
         $("button[id='btn-Ord_venta']").show();
     });
 });
-

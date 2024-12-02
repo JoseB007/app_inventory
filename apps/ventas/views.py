@@ -6,23 +6,26 @@ from django.views import generic
 from django.db import transaction
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.utils.timezone import now, localdate
+from django.utils.timezone import localdate
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from apps.productos.models import Producto
-from apps.ventas.utils import formatear_numero
-from apps.clientes.forms import FormularioCliente
-from apps.ventas.forms import FormularioOrdenDeVenta
+
+from apps.ventas.utils import formatear_numero, formatear_fecha_hora_inicio, formatear_fecha_hora_fin
+from apps.ventas.forms import FormularioOrdenDeVenta, FormularioFiltros
 from apps.ventas.mixins import ValidacionPermisosMixin
 from apps.ventas.models import OrdenDeVenta, DetalleOrdenDeVenta
-from apps.inventario.models import MovimientoInventario
-from apps.empleados.models import Empleado
-from apps.usuarios.models import Usuario
 
+from apps.clientes.forms import FormularioCliente
+from apps.clientes.models import Cliente
+
+from apps.inventario.models import MovimientoInventario
+
+from apps.empleados.models import Empleado
 
 from xhtml2pdf import pisa
 
@@ -39,6 +42,7 @@ class ListaVentas(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView)
         context['entidad'] = 'Ordenes de Ventas'
         context['lista_registros'] = reverse_lazy('ventas:lista-ventas')
         context['crear_registro'] = reverse_lazy('ventas:agregar-venta')
+        context['formularioFiltros'] = FormularioFiltros()
         return context
 
     @csrf_exempt
@@ -57,11 +61,33 @@ class ListaVentas(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView)
                 data = []
                 for i in DetalleOrdenDeVenta.objects.filter(orden_de_venta_id=self.request.POST['id']):
                     data.append(i.json_detalle_venta())
+            elif action == "filtrar":
+                campos_filtros = json.loads(request.POST.get('filtros'))
+            
+                id_cliente = campos_filtros[0]['value']
+                f_ini_str = campos_filtros[1]['value']
+                f_end_str = campos_filtros[2]['value']
+                estado_venta = campos_filtros[3]['value']
+
+                if not estado_venta:
+                    estado_venta = OrdenDeVenta.ESTADO_DE_ORDEN[1]
+
+                if not id_cliente:
+                    data['error'] = "Ningún cliente seleccionado."
+                else:
+                    data=[]
+                    fecha_ini = formatear_fecha_hora_inicio(f_ini_str)
+                    fecha_fin = formatear_fecha_hora_fin(f_end_str)
+
+                    if fecha_fin > fecha_ini:
+                        orden_filtrada = OrdenDeVenta.objects.filter(cliente=int(id_cliente), fecha__range=(fecha_ini, fecha_fin), estado=estado_venta)
+
+                        for ord_filt in orden_filtrada:
+                            data.append(ord_filt.orden_Json())
             else:
                 data['error'] = 'No se ha ingresado ninguna opción.'
         except Exception as e:
             data['error'] = str(e)
-
         return JsonResponse(data, safe=False)
 
 
@@ -69,7 +95,7 @@ class CrearVenta(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateView
     model = OrdenDeVenta
     form_class = FormularioOrdenDeVenta
     template_name = 'crear_venta.html'
-    success_url = reverse_lazy('ventas:lista-ventas')
+    success_url = reverse_lazy('productos:dashboard')
     permission_required = ("ventas.view_ordendeventa", "ventas.view_detalleordendeventa", "ventas.add_ordendeventa", "ventas.add_detalleordendeventa")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:

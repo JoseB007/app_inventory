@@ -63,7 +63,7 @@ class CrearOrdenDeCompra(LoginRequiredMixin, ValidacionPermisosMixin, generic.Cr
     model = OrdenDeCompra
     form_class = FormularioOrdenDeCompra
     template_name = 'crear_compra.html'
-    success_url = reverse_lazy('compras:lista-compras')
+    success_url = reverse_lazy('productos:dashboard')
     permission_required = ('compras.view_ordendecompra', 'compras.view_detalledecompra', 'compras.add_ordendecompra', 'compras.add_detalledecompra')
 
     @csrf_exempt

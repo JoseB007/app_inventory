@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 
 urlpatterns = [
@@ -29,4 +30,5 @@ urlpatterns = [
     path('usuarios/', include('apps.usuarios.urls')),
     path('clientes/', include('apps.clientes.urls')),
     path('movimientos-inventario/', include('apps.inventario.urls')),
+    path('', RedirectView.as_view(url='/productos/', permanent=True)),
 ]

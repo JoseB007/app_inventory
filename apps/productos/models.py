@@ -47,6 +47,11 @@ class Producto(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True)
     historial = HistoricalRecords()
 
+    class Meta:
+        permissions = [
+            ("view_dashboard", "Puede ver el dashboard"),
+        ]
+
     def json_producto(self):
         # producto = {
         #     'id': self.id, 

@@ -8,10 +8,12 @@
 
 {% block columnas %}
     <th style="width: 5%;">No.</th>
-    <th>Fecha</th>
+    <th>Fecha del movimiento</th>
+    <th style="width: 15%;">No. de ventas registradas</th>
+    <th style="width: 15%;">No. de compras registradas</th>
     <th>Total ventas</th>
     <th>Total compras</th>
-    <th style="width: 10%;">Detalles</th>
+    <th style="width: 5%;">Detalles</th>
 {% endblock %}
 
 {% block filas %}
@@ -34,10 +36,11 @@
                 <div class="modal-body">
                     <table id="tabla_detail" class="table">
                         <thead>
-                            <th style="width: 5%;">No.</th>
+                            <th>No.</th>
                             <th>Fecha</th>
-                            <th style="width: 15%;">Estado</th>
-                            <th style="width: 15%;">Total</th>
+                            <th>Estado</th>
+                            <th>Productos</th>
+                            <th>Total</th>
                             <th style="text-align: right;">Empleado</th>
                         </thead>
                         <tbody>

@@ -2,6 +2,7 @@
 {% load static %}
 {% block scripts %}
     <script src="{% static 'js/orden_venta/list.js' %}"></script>
+    <!-- <script src="{% static 'js/orden_venta/functions.js' %}"></script> -->
 {% endblock %}
 
 {% block columnas %}
@@ -26,7 +27,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-circle-info"></i> Detalle de la
-                    compra</h5>
+                    venta</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -45,4 +46,51 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalfiltros" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><i class="fa-solid fa-circle-info"></i> Filtrar busqueda</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_filtros">
+                    <div class="container">
+                        <div class="form-group">
+                            <label for="">Cliente</label>
+                            {{ formularioFiltros.cliente }}
+                        </div>
+                        <div class="form-group">
+                            <label for="">Rango de fecha</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ formularioFiltros.month_ini }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ formularioFiltros.month_end }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {% for radio in formularioFiltros.estate %}
+                                <div class="form-check">
+                                    {{ radio }}
+                                </div>
+                            {% endfor %}
+                        </div>
+            
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">Filtrar busqueda</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block filtros %}
+    <button id="id_btnfiltros" class="btn btn-primary btn-flat">Busqueda Avanzada</button>
 {% endblock %}

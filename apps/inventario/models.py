@@ -21,13 +21,22 @@ class MovimientoInventario(models.Model):
         self.total_ventas = sum(orden.total for orden in self.ordenes_venta.all())
         self.total_compras = sum(orden.total for orden in self.ordenes_compra.all())
         self.save()
+
+    def contar_ordenes(self):
+        datos = []
+        ord_ventas_count = self.ordenes_venta.count()
+        ord_compras_count = self.ordenes_compra.count()
+        datos.append(ord_ventas_count)
+        datos.append(ord_compras_count)
+        return datos
     
     def __str__(self):
         return f"Movimiento del {self.fecha}: Ventas ${self.total_ventas}, Compras ${self.total_compras}"
     
     def json_mov_inventario(self):
         inventario = model_to_dict(self, exclude=["ordenes_venta", "ordenes_compra"])
-        inventario['fecha'] = self.fecha.strftime('%d de %b de %Y')
+        inventario['fecha'] = self.fecha.strftime('%d de %B de %Y')
+        inventario['tl_ordenes'] = self.contar_ordenes()
         return inventario
 
 
