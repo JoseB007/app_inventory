@@ -45,7 +45,7 @@ class ListaVentas(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView)
         context['formularioFiltros'] = FormularioFiltros()
         return context
 
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         return super().dispatch(request, *args, **kwargs)
     
@@ -109,13 +109,13 @@ class CrearVenta(LoginRequiredMixin, ValidacionPermisosMixin, generic.CreateView
         context['formCliente'] = FormularioCliente()
         return context
 
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         # Obtener los ID de los usuarios relacionados con la tabla EMPLEADOS
         empleados = Empleado.objects.values_list('usuario', flat=True)
         # Validar si el ID del usuario en sesión se encuentra relacionado con la tabla EMPLEADOS
         if request.user.pk not in empleados:
-            messages.info(request, "La sesión actual no tiene relación con ningún empleado.")
+            messages.info(request, "El usuario actual no tiene relación con ningún empleado. Debe asignar un empleado para este usuario antes de continuar.")
             return redirect(self.success_url)
         return super().dispatch(request, *args, **kwargs)
         
@@ -223,6 +223,15 @@ class GenerarReportePDF(LoginRequiredMixin, ValidacionPermisosMixin, generic.Vie
     def get(request, self, *args, **kwargs):
         orden = OrdenDeVenta.objects.get(pk=kwargs.get('pk'))
         detalle = orden.detalleordendeventa_set.all()
+        lista_detalle = []
+        for i in detalle:
+            item = {
+                "producto": i.producto.nombre,
+                "cant": i.cantidad,
+                "p_unitario": formatear_numero(str(i.precio_unitario)),
+                "subtotal": formatear_numero(str(i.subtotal))
+            }
+            lista_detalle.append(item)
 
         subtotal = orden.subtotal
         iva = orden.iva
@@ -234,8 +243,9 @@ class GenerarReportePDF(LoginRequiredMixin, ValidacionPermisosMixin, generic.Vie
 
         context = {
             'orden': orden,
+            'lista_detalle': lista_detalle,
             'datos_empresa': {
-                'nombre': 'System Hight',
+                'nombre': 'From Software',
                 'NIT': '9999999999',
                 'direccion': 'Pasto-Nariño',
             }

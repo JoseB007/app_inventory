@@ -17,6 +17,9 @@ class Categoria(models.Model):
     JUGUETERIA = 'jugueteria'
     PAPELERIA = 'papeleria'
     MUSICA_CINE = 'musica_y_cine'
+    MASCOTAS = 'mascotas'
+    TELEVISORES = 'televisores'
+    COMPUTADORES = 'computadores'
 
 
     CATEGORIAS_DE_PRODUCTO = [
@@ -30,7 +33,10 @@ class Categoria(models.Model):
         (TECNOLOGIA, 'Tecnología'),
         (JUGUETERIA, 'Juguetería'),
         (PAPELERIA, 'Papelería'),
-        (MUSICA_CINE, 'Música y Cine')
+        (MUSICA_CINE, 'Música y Cine'),
+        (MASCOTAS, 'Mascotas'), 
+        (TELEVISORES, 'Televisores'),
+        (COMPUTADORES, 'Computadores')
     ]
 
     tipo_categoria = models.CharField(max_length=20, choices=CATEGORIAS_DE_PRODUCTO, unique=True)

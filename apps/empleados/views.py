@@ -60,7 +60,7 @@ class ListaEmpleados(LoginRequiredMixin, SuperuserRequiredMixin, generic.ListVie
         context['lista_registros'] = reverse_lazy('empleados:lista-empleados')
         return context
     
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 

@@ -34,7 +34,7 @@ class ListaUsuarios(LoginRequiredMixin, SuperUserRequiredMixin, generic.ListView
         context['lista_registros'] = reverse_lazy('usuarios:lista-usuarios')
         return context
     
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 

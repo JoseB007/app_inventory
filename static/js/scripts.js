@@ -1,3 +1,20 @@
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
 function enviar_datos_ajax(url, parametros, url_redireccion) {
     $.confirm({
         title: "Confirmación!",
@@ -16,23 +33,22 @@ function enviar_datos_ajax(url, parametros, url_redireccion) {
                         data: parametros,
                         dataType: "json",
                     })
-                        .done(function (data) {
-                            /*Validar si la variable data no contiene una propiedad llamada error*/
-                            if (!data.error) {
-                                if (typeof url_redireccion === "function") {
-                                    url_redireccion(data);
-                                } else {
-                                    location.href = url_redireccion;
-                                    return false;
-                                }
+                    .done(function (data) {
+                        /*Validar si la variable data no contiene una propiedad llamada error*/
+                        if (!data.error) {
+                            if (typeof url_redireccion === "function") {
+                                url_redireccion(data);
                             } else {
-                                message_error(data.error);
+                                location.href = url_redireccion;
+                                return false;
                             }
-                        })
-                        .fail(function (jqXHR, textStatus, errorThrown) {
-                            alert(textStatus + ": " + errorThrown);
-                        })
-                        .always(function (data) {});
+                        } else {
+                            message_error(data.error);
+                        }
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        alert(textStatus + ": " + errorThrown);
+                    })
                 },
             },
             danger: {
@@ -117,11 +133,13 @@ $(function () {
         let datos = $(this).serializeArray();
         let parametros = {
             action: "filtrar",
+            mostrar_datos: "filtrar",
             filtros: JSON.stringify(datos)
         }
         $.ajax({
             url: window.location.pathname,
             type: "POST",
+            headers: {'X-CSRFToken': csrftoken},
             data: parametros,
             success: function (response) {
                 if (!response.error) {

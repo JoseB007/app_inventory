@@ -16,11 +16,15 @@
                             <h1 class="m-0 text-dark"> 
                                 Bienvenido, 
                                 <small>
-                                    {{ request.user.get_full_name }}
+                                    {% if request.user.get_full_name %}
+                                        {{ request.user.get_full_name }}
+                                    {% else %}
+                                        Usuario
+                                    {% endif %}
                                     {% if request.user.is_superuser %}
-                                    <small style="font-size:small;">
-                                        (SU)
-                                    </small>
+                                        <small style="font-size:small;">
+                                            (SU)
+                                        </small>
                                     {% endif %}
                                 </small>
                             </h1>

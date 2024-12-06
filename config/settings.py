@@ -153,7 +153,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Url de reedirección de la clase LoginView() y LogoutView()
-LOGIN_REDIRECT_URL = '/productos/dashboard/'
+LOGIN_REDIRECT_URL = '/productos/dashboard/' # URL al que se reedirecciona cuando inicia sesión
 LOGOUT_REDIRECT_URL = '/login/'
 
 # Si el usuario no ha iniciado sesión, se reedireciona a login y se pasa la ruta a la que está intentanto ingresar en un variable llamada next como cadena de consulta. Cuando se inicie sesión el usuario será reedireccionado a la vista que estaba intentado ingresar. 

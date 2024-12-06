@@ -10,11 +10,17 @@ from django.utils.timezone import now, localtime, localdate
 
 
 from apps.productos.models import Producto
+
 from .mixins import ValidacionPermisosMixin
-from apps.compras.forms import FormularioOrdenDeCompra
+
+from apps.compras.forms import FormularioOrdenDeCompra, FormularioFiltros
 from apps.compras.models import OrdenDeCompra, DetalleDeCompra
+from apps.compras.utils import formatear_fecha_hora_inicio, formatear_fecha_hora_fin
+
 from apps.inventario.models import MovimientoInventario
+
 from apps.empleados.models import Empleado
+
 from apps.proveedores.forms import FormularioProveedor
 
 
@@ -26,7 +32,7 @@ class ListaCompras(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView
     template_name = 'lista_compras.html'
     permission_required = ('compras.view_ordendecompra', 'compras.view_detalledecompra')
     
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
     
@@ -42,12 +48,34 @@ class ListaCompras(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView
                 datos = []
                 for i in DetalleDeCompra.objects.filter(orden_de_compra_id=request.POST['id']):
                     datos.append(i.detalle_json())
+            elif mostrar_datos == "filtrar":
+                campos_filtros = json.loads(request.POST.get('filtros'))
+
+                id_proveedor = campos_filtros[0]['value']
+                f_ini_str = campos_filtros[1]['value']
+                f_end_str = campos_filtros[2]['value']
+                estado_venta = campos_filtros[3]['value']
+
+                if not estado_venta:
+                    estado_venta = OrdenDeCompra.ESTADO_DE_ORDEN[1]
+
+                if not id_proveedor:
+                    datos['error'] = "Ningún proveedor seleccionado."
+                else:
+                    datos=[]
+                    fecha_ini = formatear_fecha_hora_inicio(f_ini_str)
+                    fecha_fin = formatear_fecha_hora_fin(f_end_str)
+
+                    if fecha_fin > fecha_ini:
+                        orden_filtrada = OrdenDeCompra.objects.filter(proveedor=int(id_proveedor), fecha_de_orden__range=(fecha_ini, fecha_fin), estado=estado_venta)
+
+                        for ord_filt in orden_filtrada:
+                            datos.append(ord_filt.orden_json())
             else:
                 datos['error'] = 'Ha ocurrido un error al intentar mostrar los datos'
         except Exception as e:
             datos['error'] = str(e)
         
-        # print(f'Detalle de la compra: {datos}')
         return JsonResponse(datos, safe=False)
     
     def get_context_data(self, **kwargs):
@@ -56,6 +84,7 @@ class ListaCompras(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListView
         context['entidad'] = 'Ordenes de Compra'
         context['crear_registro'] = reverse_lazy('compras:agregar-compra')
         context['lista_registros'] = reverse_lazy('compras:lista-compras')
+        context['formularioFiltros'] = FormularioFiltros()
         return context
     
 
@@ -66,13 +95,13 @@ class CrearOrdenDeCompra(LoginRequiredMixin, ValidacionPermisosMixin, generic.Cr
     success_url = reverse_lazy('productos:dashboard')
     permission_required = ('compras.view_ordendecompra', 'compras.view_detalledecompra', 'compras.add_ordendecompra', 'compras.add_detalledecompra')
 
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         # Obtener los ID de los usuarios relacionados con la tabla EMPLEADOS
         empleados = Empleado.objects.values_list('usuario', flat=True)
         # Validar si el ID del usuario en sesión se encuentra relacionado con la tabla EMPLEADOS
         if request.user.pk not in empleados:
-            messages.info(request, "La sesión actual no tiene relación con ningún empleado.")
+            messages.info(request, "El usuario actual no tiene relación con ningún empleado. Debe asignar un empleado para este usuario antes de continuar.")
             return redirect(self.success_url)
         return super().dispatch(request, *args, **kwargs)
 

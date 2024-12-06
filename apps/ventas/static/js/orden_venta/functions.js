@@ -139,6 +139,7 @@ $(function () {
             $.ajax({
                 url: window.location.pathname,
                 type: "POST",
+                headers: {'X-CSRFToken': csrftoken},
                 data: {
                     term: request.term,
                     action: "buscar",
@@ -295,11 +296,24 @@ $(function () {
 
         sale.cliente = $('select[name="cliente"]').val();
         sale.estado = $('select[name="estado"]').val();
-        var parametros = {
-            sale: JSON.stringify(sale),
-            action: $('input[name="accion"]').val(),
-        };
-        console.log(parametros);
+        var parametros = $(this).serializeArray()
+        
+        // parametros += {
+        //     sale: JSON.stringify(sale),
+        //     action: $('input[name="accion"]').val(),
+        // };
+
+        parametros.push(
+            {
+                name: 'sale',
+                value: JSON.stringify(sale),
+            },
+            {
+                name: 'action',
+                value: $('input[name="accion"]').val()
+            }
+        )
+       
         enviar_datos_ajax(
             window.location.pathname,
             parametros,

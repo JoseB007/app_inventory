@@ -27,7 +27,7 @@ class ListaProveedores(LoginRequiredMixin, ValidacionPermisosMixin, generic.List
         context['crear_registro'] = reverse_lazy('proveedores:crear-proveedor')
         return context
 
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
     

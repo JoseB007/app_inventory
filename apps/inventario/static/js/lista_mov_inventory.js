@@ -13,6 +13,7 @@ function tabla_de_registros(selector, url_language) {
         ajax: {
             url: window.location.pathname,
             type: "POST",
+            headers: {'X-CSRFToken': csrftoken},
             data: {
                 accion: "mostrar",
             },
@@ -41,7 +42,7 @@ function tabla_de_registros(selector, url_language) {
                 class: "text-right",
                 render: function (data, type, row) {
                     let boton =
-                        '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline"><i class="fas fa-search"></i></button>';
+                        '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline; padding: 0;"><i class="fas fa-search"></i></button>';
                     return boton;
                 },
             },
@@ -103,6 +104,7 @@ $(function () {
             $.ajax({
                 url: window.location.pathname,
                 type: "POST",
+                headers: {'X-CSRFToken': csrftoken},
                 data: {
                     id: datos_fila.id,
                     accion: "detalle",

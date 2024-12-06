@@ -11,11 +11,12 @@ from django.db.models import Sum
 
 from .models import Producto
 from .forms import FormularioProducto #FormFiltroCategoria, FormRangoPrecio
-from apps.usuarios.models import Usuario
 from .mixins import ValidacionPermisosMixin
+from .utils import formatear_numero
+
+from apps.usuarios.models import Usuario
 from apps.compras.models import OrdenDeCompra
 from apps.ventas.models import OrdenDeVenta
-from .utils import formatear_numero
 
 
 from datetime import date
@@ -41,7 +42,7 @@ class ListaProductos(LoginRequiredMixin, ValidacionPermisosMixin, generic.ListVi
         # context['FormRangoPrecio'] = FormRangoPrecio()
         return context
     
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
     

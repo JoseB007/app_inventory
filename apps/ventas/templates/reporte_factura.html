@@ -86,11 +86,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for d in orden.detalleordendeventa_set.all %}
+                {% for d in lista_detalle %}
                 <tr {% if forloop.first %}style="padding-top: 3px;" {% endif %}>
-                    <td>{{ d.producto.nombre }}</td>
-                    <td class="text-center">{{ d.cantidad }}</td>
-                    <td style="text-align: right">${{ d.precio_unitario }}</td>
+                    <td>{{ d.producto }}</td>
+                    <td class="text-center">{{ d.cant }}</td>
+                    <td style="text-align: right">${{ d.p_unitario }}</td>
                     <td style="text-align: right">${{ d.subtotal }}</td>
                 </tr>
                 {% endfor %}

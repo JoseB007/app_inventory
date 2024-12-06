@@ -146,6 +146,7 @@ $(function () {
         source: function (request, response) {
             $.ajax({
                 url: window.location.pathname,
+                headers: {'X-CSRFToken': csrftoken},
                 data: {
                     accion: "buscar",
                     term: request.term,
@@ -154,7 +155,14 @@ $(function () {
                 dataType: "json",
                 // código a ejecutar si la petición es satisfactoria la respuesta es pasada como argumento a la función
                 success: function (data) {
-                    if (!data.error) {
+                    if (data.length === 0) {
+                        response([
+                            {
+                                value: "El producto no se encontró",
+                            },
+                        ]);
+                    }
+                    else if (!data.error) {
                         response(data);
                     } else {
                         message_error(response.error);
@@ -163,16 +171,21 @@ $(function () {
                 error: function (xhr, status) {
                     alert(
                         "Disculpe, existió un problema.",
-                        textStatus + ": " + errorThrown
+                        status + ": " + xhr
                     );
                 },
             });
         },
         select: function (event, ui) {
             event.preventDefault();
+            if (
+                ui.item.value !=
+                "El producto no se encontró"
+            ) {
             ui.item.cantidad = 1;
             ui.item.subtotal = 0.0;
             compra.agregar(ui.item);
+            }
             $(this).val("");
         },
     });
@@ -190,7 +203,7 @@ $(function () {
         .on("change", function () {
             compra.calcular_totales();
         })
-        .val(0.12);
+        .val(0.0);
 
     $("#tabla_productos tbody")
         .on("click", 'a[rel="remove"]', function () {
@@ -283,19 +296,21 @@ $(function () {
         }
         compra.items.proveedor = $('select[name="proveedor"]').val();
         compra.items.estado = $('select[name="estado"]').val();
-        var parametros = {
-            compra: JSON.stringify(compra.items),
-            accion: $('input[name="accion"]').val(),
-        };
-        // var parametros = $(this).serializeArray()
-        // parametros.push({
-        //     name: 'compra',
-        //     value: JSON.stringify(compra.items)
-        // })
+        // var parametros = {
+        //     compra: JSON.stringify(compra.items),
+        //     accion: $('input[name="accion"]').val(),
+        // };
+        var parametros = $(this).serializeArray()
+        
+        parametros.push({
+            name: 'compra',
+            value: JSON.stringify(compra.items)
+        })
+
         enviar_datos_ajax(
-            window.location.pathname,
-            parametros,
-            url_redireccion
+        window.location.pathname,
+        parametros,
+        url_redireccion
         );
     });
 });

@@ -1,3 +1,2 @@
 admin: 215010023jbm
-dianaisa: 18012005
-homero_simpson_998: abuelo_simpson
+primer_usuario_860: NuCnRJpP38

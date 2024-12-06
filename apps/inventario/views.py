@@ -27,7 +27,7 @@ class ListaMovimientosIventario(LoginRequiredMixin, ValidacionPermisosMixin, Lis
         #context['crear_registro'] = reverse_lazy('productos:crear-producto')
         return context
     
-    @csrf_exempt
+    # @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 

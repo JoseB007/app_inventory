@@ -9,6 +9,7 @@ function tabla_de_registros(selector, language_url) {
         ajax: {
             url: window.location.pathname,
             type: "POST",
+            headers: {'X-CSRFToken': csrftoken},
             data: {
                 mostrar_datos: "mostrar",
             },
@@ -30,11 +31,11 @@ function tabla_de_registros(selector, language_url) {
                     var buttons =
                         '<a href="/productos/editar-producto/' +
                         row.id +
-                        '/" class="btn btn-md" style="color: #007bff"><i class="fas fa-edit"></i></a>';
+                        '/" class="btn btn-md" style="color: #007bff; padding-top:0; padding-bottom:0;"><i class="fas fa-edit"></i></a>';
                     buttons +=
                         '<a href="/productos/eliminar-producto/' +
                         row.id +
-                        '/" class="btn btn-md" style="color: #007bff"><i class="fas fa-trash-alt"></i></a>';
+                        '/" class="btn btn-md" style="color: #007bff; padding-top:0; padding-bottom:0;"><i class="fas fa-trash-alt"></i></a>';
                     return buttons;
                 },
             },

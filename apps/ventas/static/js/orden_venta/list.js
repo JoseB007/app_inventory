@@ -9,6 +9,7 @@ function tabla_de_registros(selector, url) {
         ajax: {
             url: window.location.pathname,
             type: "POST",
+            headers: {'X-CSRFToken': csrftoken},
             data: {
                 action: "list_data",
             },
@@ -38,9 +39,9 @@ function tabla_de_registros(selector, url) {
                 class: "text-right",
                 render: function (data, type, row) {
                     let botones =
-                        '<a href="/ventas/reportes/facturas/'+ row.id +'/" target="__blank" class="btn btn-md" style="color: #007bff; display:inline"><i class="fa-solid fa-file-pdf"></i></a>';
+                        '<a href="/ventas/reportes/facturas/'+ row.id +'/" target="__blank" class="btn btn-md" style="color: #007bff; display:inline; padding-top:0; padding-bottom:0;"><i class="fa-solid fa-file-pdf"></i></a>';
                     botones +=
-                        '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline"><i class="fas fa-search"></i></button>';
+                        '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline; padding-top:0; padding-bottom:0;"><i class="fas fa-search"></i></button>';
                     return botones;
                 },
             },
@@ -80,6 +81,7 @@ $(function () {
                 ajax: {
                     url: window.location.pathname,
                     type: "POST",
+                    headers: {'X-CSRFToken': csrftoken},
                     data: {
                         id: datos_fila.id,
                         action: "detail",
@@ -144,9 +146,9 @@ function tabla_filtros(tabla_selector, datos, url) {
                 class: "text-right",
                 render: function (data, type, row) {
                     let botones =
-                        '<a href="/ventas/reportes/facturas/'+ row.id +'/" target="__blank" class="btn btn-md" style="color: #007bff; display:inline"><i class="fa-solid fa-file-pdf"></i></a>';
+                        '<a href="/ventas/reportes/facturas/'+ row.id +'/" target="__blank" class="btn btn-md" style="color: #007bff; display:inline; padding-top:0; padding-bottom:0;"><i class="fa-solid fa-file-pdf"></i></a>';
                     botones +=
-                        '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline"><i class="fas fa-search"></i></button>';
+                        '<button rel="detail" class="btn btn-md" style="color: #007bff; display:inline; padding-top:0; padding-bottom:0;"><i class="fas fa-search"></i></button>';
                     return botones;
                 },
             },

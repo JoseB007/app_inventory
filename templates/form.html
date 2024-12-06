@@ -56,6 +56,7 @@
         // Serializa los datos del formulario en un array de objetos {name: 'nombre_del_campo', value: 'valor_del_campo'}
         var parametros = $(this).serializeArray();
         var url_redireccion = '{{ url_reedireccion }}'
+        console.log(parametros)
 
         // Realiza una solicitud AJAX
         enviar_datos_ajax(window.location.pathname, parametros, url_redireccion);
