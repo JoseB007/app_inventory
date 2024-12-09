@@ -27,6 +27,8 @@ from apps.inventario.models import MovimientoInventario
 
 from apps.empleados.models import Empleado
 
+from apps.configuracion.models import Configuracion
+
 from xhtml2pdf import pisa
 
 
@@ -241,12 +243,17 @@ class GenerarReportePDF(LoginRequiredMixin, ValidacionPermisosMixin, generic.Vie
         orden.iva = formatear_numero(str(iva))
         orden.total = formatear_numero(str(total))
 
+        datos_config = Configuracion.obtener_config()
+        
+
         context = {
             'orden': orden,
             'lista_detalle': lista_detalle,
             'datos_empresa': {
-                'nombre': 'From Software',
-                'NIT': '9999999999',
+                'nombre': datos_config['nombre_empresa'],
+                'NIT': datos_config['nit'],
+                'email': datos_config['email'],
+                'telefono': datos_config['telefono'],
                 'direccion': 'Pasto-Nariño',
             }
         }

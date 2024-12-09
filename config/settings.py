@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'apps.ventas',
     'apps.login',
     'apps.usuarios',
+    'apps.configuracion',
     # django-simple-history
     'simple_history',
 ]
@@ -77,6 +78,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Procesador de contexto de las aplicaciones 
+                'apps.configuracion.context_processors.obtener_config',
             ],
         },
     },

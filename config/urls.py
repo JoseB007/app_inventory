@@ -30,5 +30,6 @@ urlpatterns = [
     path('usuarios/', include('apps.usuarios.urls')),
     path('clientes/', include('apps.clientes.urls')),
     path('movimientos-inventario/', include('apps.inventario.urls')),
+    path('configuracion/', include('apps.configuracion.urls')),
     path('', RedirectView.as_view(url='/productos/dashboard/', permanent=True)),
 ]

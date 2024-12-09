@@ -3,30 +3,33 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <style>
         @page {
-            size: a4 portrait;
+            size: 8.5in 11in;
             margin: 2cm;
             @frame header_frame {
                 /* Static Frame */
                 -pdf-frame-content: header_content;
                 left: 50pt;
                 width: 512pt;
-                top: 50pt;
-                height: 40pt;
+                top: 35pt;
+            }
+            @frame info_frame {
+                /* Static Frame */
+                -pdf-frame-content: info_frame;
+                right: 50pt;
+                top: 90pt;
             }
             @frame content_frame {
                 /* Content Frame */
                 left: 50pt;
                 width: 512pt;
-                top: 90pt;
-                height: 632pt;
+                top: 130pt;
             }
             @frame footer_frame {
-                /* Another static Frame */
+                /* Static Frame */
                 -pdf-frame-content: footer_content;
                 left: 50pt;
                 width: 512pt;
-                top: 772pt;
-                height: 20pt;
+                top: 720pt;
             }
         }
         .img-invoice {
@@ -62,11 +65,16 @@
     </style>
     <body>
         <div id="header_content">
-            <!-- <img src="{{ icon }}" class="img-invoice"> -->
             <p class="head">
-                <b style="font-size: 2rem">{{ datos_empresa.nombre}}</b><br />
-                {{ datos_empresa.NIT }}<br />
-                {{ datos_empresa.direccion }}
+                <b style="font-size: 3rem">{{ datos_empresa.nombre}}</b><br />
+                <strong>NIT: </strong>{{ datos_empresa.NIT }}<br />
+            </p>
+        </div>
+        <div id="info_frame">
+            <p style="text-align: right;">
+                <strong>Email: </strong>{{ datos_empresa.email }}<br />
+                <strong>Teléfono: </strong>{{ datos_empresa.telefono }}<br />
+                <strong>Dirección: </strong>{{ datos_empresa.direccion }}
             </p>
         </div>
         <hr />
@@ -105,14 +113,14 @@
                     </tr>
                     <tr style="padding-top: 0px">
                         <td><b>TOTAL A PAGAR</b></td>
-                        <td style="text-align: right">${{ orden.total }}</td>
+                        <td style="text-align: right; font-weight: 500;">${{ orden.total }}</td>
                     </tr>
                 </table>
             </tbody>
         </table>
         <div id="footer_content" style="text-align: center;">
             <p>
-                <b>****GRACIAS POR SU COMPRA****</b>
+                <b>****GRACIAS POR SU COMPRA****</b><br>
                 <b>NO SE ACEPTAN CAMBIOS NI DEVOLUCIONES</b>
             </p>
         </div>
