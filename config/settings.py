@@ -162,7 +162,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 # Si el usuario no ha iniciado sesión, se reedireciona a login y se pasa la ruta a la que está intentanto ingresar en un variable llamada next como cadena de consulta. Cuando se inicie sesión el usuario será reedireccionado a la vista que estaba intentado ingresar. 
 LOGIN_URL = '/login/'
 
-AUTH_USER_MODEL = "usuarios.usuario"
+AUTH_USER_MODEL = "usuarios.Usuario"
 
 # Envío de correos eléctronicos
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
