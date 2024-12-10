@@ -18,10 +18,12 @@ media/
 # Ignorar las bibliotecas frontend dentro de static/lib/
 static/lib/
 
-# Ignorar archivos de migraciones ()
-# Este patrón le indica a Git que ignore todos los archivos .py dentro de cualquier carpeta llamada migrations, sin importar en qué parte de la estructura de carpetas se encuentre.
-**/migrations/*.py
-# El signo de exclamación (!) indica una excepción a la regla de ignorar archivos. Este patrón le dice a Git que no ignore el archivo __init__.py dentro de cualquier carpeta migrations.
-!**/migrations/__init__.py
+# # Ignorar archivos de migraciones ()
+# # Este patrón le indica a Git que ignore todos los archivos .py dentro de cualquier carpeta llamada migrations, sin importar en qué parte de la estructura de carpetas se encuentre.
+# **/migrations/*.py
+# # El signo de exclamación (!) indica una excepción a la regla de ignorar archivos. Este patrón le dice a Git que no ignore el archivo __init__.py dentro de cualquier carpeta migrations.
+# !**/migrations/__init__.py
 
 usuarios_contraseñas.txt
+
+.env
