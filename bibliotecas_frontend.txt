@@ -1,0 +1,10 @@
+adminlte-3.0.4
+bootstrap-5.0.2-dist
+bootstrap-touchspin-master
+DataTables
+DataTables-2.1.8
+fontawesome-free-6.6.0-web
+Highcharts-11.4.8
+jquery-confirm
+jquery-ui-1.14.0.custom
+sweetalert2-9.10.0

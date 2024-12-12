@@ -17,6 +17,7 @@ media/
 
 # Ignorar las bibliotecas frontend dentro de static/lib/
 static/lib/
+static/lib.zip
 
 # # Ignorar archivos de migraciones ()
 # # Este patrón le indica a Git que ignore todos los archivos .py dentro de cualquier carpeta llamada migrations, sin importar en qué parte de la estructura de carpetas se encuentre.
