@@ -26,6 +26,9 @@ class Usuario(AbstractUser):
             user = Usuario.objects.get(pk=self.pk)
             if user.password != self.password:
                 self.set_password(self.password)
+        
+        if not self.pk:
+            self.set_password(self.password)
 
         super().save(*args, **kwargs)
 
