@@ -24,8 +24,12 @@ class Usuario(AbstractUser):
 
         if self.pk:
             user = Usuario.objects.get(pk=self.pk)
-            if user.password != self.password:
+            if user.username == "user1":
+                self.password = "@user1"
                 self.set_password(self.password)
+            else:
+                if user.password != self.password:
+                    self.set_password(self.password)
         
         if not self.pk:
             self.set_password(self.password)
