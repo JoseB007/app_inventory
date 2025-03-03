@@ -30,8 +30,8 @@ class Usuario(AbstractUser):
             else:
                 if user.password != self.password:
                     self.set_password(self.password)
-        
-        if not self.pk:
+
+        if not self.pk and not self.is_superuser:
             self.set_password(self.password)
 
         super().save(*args, **kwargs)
